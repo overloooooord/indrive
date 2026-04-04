@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inVision U — Подать заявку</title>
+  <meta name="description" content="inVision U — подача заявки для программы отбора. Анкета, MBTI тест, языковой тест." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo" id="logo">
+      <div class="logo-icon">iU</div>
+      <span>inVision<strong>U</strong></span>
+    </div>
+    <div class="header-right">
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="kz">ҚЗ</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button class="theme-btn" id="theme-toggle"><span id="theme-icon">🌙</span></button>
+      <button class="header-btn btn-outline" id="btn-login" data-i18n="login_btn">Войти</button>
+      <button class="header-btn btn-accent" id="btn-start-header" data-i18n="apply_btn">Подать заявку</button>
+    </div>
+  </header>
+  <div id="toast-container" class="toast-container"></div>
+  <div id="loader-overlay" class="loader-overlay hidden">
+    <div class="loader-spinner"></div>
+  </div>
+  <section id="screen-landing" class="screen active">
+    <div class="hero">
+      <div class="hero-bg-text">inVision U</div>
+      <div class="hero-badge" data-i18n="badge">✨ Программа отбора 2026</div>
+      <h1>
+        <span data-i18n="hero_line1">Поступи в</span>
+        <span class="accent-text">inVision U</span>
+      </h1>
+      <p class="hero-description" data-i18n="hero_sub">
+        Заполни анкету, пройди MBTI тест и языковой тест.
+        Все данные защищены и отправляются в нашу систему.
+      </p>
+      <button class="hero-cta" id="hero-start-btn">
+        <span data-i18n="apply_btn">Подать заявку</span> →
+      </button>
+      <p class="hero-note" data-i18n="cta_note">Бесплатно · ~15 минут · Данные защищены</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">3</div>
+          <div class="hero-stat-label" data-i18n="steps">Шага</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">MBTI</div>
+          <div class="hero-stat-label" data-i18n="test">Тест</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">🔒</div>
+          <div class="hero-stat-label" data-i18n="safe">Безопасно</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="screen-login" class="screen">
+    <div class="form-screen" style="min-height:100vh; align-items:center;">
+      <div class="card login-card">
+        <h2 class="card-title" data-i18n="login_title">Вход в панель</h2>
+        <p class="card-subtitle" data-i18n="login_sub">Авторизация для администраторов</p>
+        <div id="login-error" class="error-msg hidden"></div>
+        <form id="login-form" autocomplete="off">
+          <div class="form-group">
+            <label for="login-username" data-i18n="login_user">Логин</label>
+            <input type="text" id="login-username" placeholder="Введите логин" data-i18n-ph="ph_login" autocomplete="username" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password" data-i18n="login_pass">Пароль</label>
+            <input type="password" id="login-password" placeholder="••••••" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="btn btn-primary" id="login-submit">
+            <span class="btn-text" data-i18n="login_btn">Войти</span>
+            <div id="login-spinner" class="spinner hidden"></div>
+          </button>
+        </form>
+        <p style="text-align:center; margin-top:1.5rem;">
+          <a href="#" id="login-back" data-i18n="go_home" style="color:var(--clr-text-2); font-size:0.85rem;">На главную</a>
+        </p>
+      </div>
+    </div>
+  </section>
+  <section id="screen-register" class="screen">
+    <div class="form-screen">
+      <div class="card">
+        <h2 class="card-title" data-i18n="reg_title">Заявка</h2>
+        <p class="card-subtitle" data-i18n="reg_sub">Заполни все поля для подачи заявки</p>
+        <div id="reg-error" class="error-msg hidden"></div>
+        <form id="register-form" autocomplete="off">
+          <div class="form-group">
+            <label for="f-name" data-i18n="label_name">Имя и фамилия *</label>
+            <input type="text" id="f-name" placeholder="Иван Иванов" data-i18n-ph="ph_name" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-city" data-i18n="label_city">Город *</label>
+              <select id="f-city" required>
+                <option value="" data-i18n="choose">— выберите —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="f-region" data-i18n="label_region">Регион</label>
+              <input type="text" id="f-region" readonly placeholder="Заполнится автоматически" data-i18n-ph="ph_region" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="label_langs">Знание языков *</label>
+            <div id="lang-chips" class="chips-container"></div>
+          </div>
+          <div class="form-group">
+            <label for="f-telegram" data-i18n="label_tg">Telegram username *</label>
+            <input type="text" id="f-telegram" placeholder="@username" data-i18n-ph="ph_tg" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-hobbies" data-i18n="label_hobbies">Хобби</label>
+              <input type="text" id="f-hobbies" placeholder="Чтение, музыка..." data-i18n-ph="ph_hobbies" />
+            </div>
+            <div class="form-group">
+              <label for="f-sport" data-i18n="label_sport">Спорт</label>
+              <input type="text" id="f-sport" placeholder="Плавание, бег..." data-i18n-ph="ph_sport" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-essay" data-i18n="label_essay">Эссе *</label>
+            <textarea id="f-essay" rows="4" placeholder="Расскажите о себе и своих достижениях..." data-i18n-ph="ph_essay" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="f-motivation" data-i18n="label_motivation">Мотивационное письмо *</label>
+            <textarea id="f-motivation" rows="4" placeholder="Почему вы хотите учиться на нашей программе?" data-i18n-ph="ph_motivation" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="reg-submit">
+            <span class="btn-text" data-i18n="next_btn">Далее — MBTI тест →</span>
+            <div id="reg-spinner" class="spinner hidden"></div>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section id="screen-mbti" class="screen">
+    <div class="form-screen">
+      <div class="card">
+        <h2 class="card-title" data-i18n="mbti_title">Психометрический тест</h2>
+        <div class="progress-label" id="mbti-progress-label">1 / 40</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="mbti-progress-fill" style="width: 2.5%"></div>
+        </div>
+        <div class="test-question">
+          <div class="test-q-number"><span data-i18n="mbti_pick">Вопрос</span> <span id="mbti-q-num">1</span></div>
+          <div class="test-q-text" id="mbti-q-text"></div>
+        </div>
+        <div class="test-options" id="mbti-options"></div>
+        <div class="test-nav">
+          <button class="btn btn-secondary btn-nav" id="mbti-prev" data-i18n="back">← Назад</button>
+          <button class="btn btn-primary btn-nav" id="mbti-next" data-i18n="next_q">Далее →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="screen-lang-test" class="screen">
+    <div class="form-screen">
+      <div class="card">
+        <div class="test-header">
+          <h2 class="card-title" data-i18n="lang_title">Языковой тест</h2>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div id="violation-badge" class="violation-badge hidden">
+              <span id="violation-text">⚠ 0</span>
+            </div>
+            <div class="timer" id="lang-timer">10:00</div>
+          </div>
+        </div>
+        <div class="progress-label" id="lang-progress-label">1 / 20</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="lang-progress-fill" style="width: 5%"></div>
+        </div>
+        <div class="test-question">
+          <div class="test-q-number">Question <span id="lang-q-num">1</span></div>
+          <div class="test-q-text" id="lang-q-text"></div>
+        </div>
+        <div class="test-options" id="lang-options"></div>
+        <div class="test-nav">
+          <button class="btn btn-secondary btn-nav" id="lang-prev" data-i18n="back">← Назад</button>
+          <button class="btn btn-primary btn-nav" id="lang-next" data-i18n="next_q">Далее →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="screen-success" class="screen">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title" data-i18n="success_title">Заявка отправлена!</h2>
+      <p class="success-sub" data-i18n="success_sub">Все данные сохранены. Спасибо за заявку!</p>
+      <p style="color:var(--clr-text-2); margin-bottom:1rem;" data-i18n="tg_redirect">
+        Перейдите в Telegram, чтобы отслеживать статус вашей заявки:
+      </p>
+      <a href="https://t.me/invisionu_bot" target="_blank" class="tg-link">
+        📱 Telegram Bot
+      </a>
+      <button class="btn btn-secondary" id="btn-home" data-i18n="go_home">На главную</button>
+    </div>
+  </section>
+  <script src="i18n.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+[2026-04-01 15:26:21,742] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-01 15:26:26,950] INFO candidates — Успешный вход в админку: era
+[2026-04-01 15:26:52,949] WARNING candidates — Неверный пароль для пользователя era
+[2026-04-01 16:47:32,959] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 03:25:03,171] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 03:28:32,670] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 03:34:20,274] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 03:34:22,977] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 17:29:52,753] INFO candidates — Выход из админ-панели
+[2026-04-04 17:30:03,647] WARNING candidates — Неверный пароль для era
+[2026-04-04 17:30:25,664] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 17:38:56,561] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:39:18,217] ERROR candidates — Ошибка массового скоринга: could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+
+[2026-04-04 17:39:36,189] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:47:12,734] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 17:47:13,198] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:50:42,934] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-04 17:52:07,130] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 17:52:07,681] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:52:18,745] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 17:52:21,041] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 17:52:33,630] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:52:33,654] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:52:33,776] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:53:57,666] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:53:58,757] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:54:28,577] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 17:54:28,650] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:06:06,350] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:06:42,040] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:22:40,177] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-04 18:30:14,602] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:33:26,198] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:34:51,237] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-04 18:34:55,686] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:00,435] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 18:35:02,786] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 18:35:11,691] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:11,816] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:54,385] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:54,415] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:55,920] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:35:57,978] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:36:02,304] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 18:37:45,784] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:04:59,248] INFO candidates — Выход из админ-панели
+[2026-04-04 19:05:20,065] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:05:26,432] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 19:05:27,210] WARNING candidates — Неудачная попытка входа в панель: username=eraera
+[2026-04-04 19:05:29,233] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 19:05:38,340] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:05:39,939] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 19:05:40,116] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:06:01,943] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:06:03,912] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:14:00,904] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:30:32,434] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:34:25,889] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:34:28,146] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 19:34:28,479] WARNING candidates — bot_db недоступен (could not translate host name "db.ogbabrukutngsdlbryne.supabase.co" to address: No address associated with hostname
+), используем локальную БД
+[2026-04-04 20:30:47,338] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:31:41,067] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:32:30,335] INFO candidates — Выход из админ-панели
+[2026-04-04 20:32:43,394] WARNING candidates — Неудачная попытка входа в панель: username=eraera
+[2026-04-04 20:32:58,945] INFO candidates — Успешный вход в админ-панель: era
+[2026-04-04 20:32:59,117] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:34:51,511] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:37:41,631] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:37:42,430] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:37:47,784] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:37:50,402] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:37:58,657] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:38:03,127] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:38:08,613] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:47:28,384] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:49:25,347] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:59:01,574] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-04 20:59:06,462] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 20:59:15,814] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 20:59:18,368] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 20:59:18,371] ERROR candidates — Ошибка скоринга заявки #5: Feature shape mismatch, expected: 23, got 31
+[2026-04-04 20:59:18,661] ERROR candidates — Ошибка скоринга заявки #5: Feature shape mismatch, expected: 23, got 31
+[2026-04-04 21:00:09,683] ERROR candidates — Ошибка скоринга заявки #5: Feature shape mismatch, expected: 23, got 31
+[2026-04-04 21:00:14,371] ERROR candidates — Ошибка скоринга #5: Feature shape mismatch, expected: 23, got 31
+[2026-04-04 21:00:14,395] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:17,952] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:23,952] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:30,266] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:31,813] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:33,577] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:52,267] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:00:55,435] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:01:16,774] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:03:18,556] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:03:52,635] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:03:53,548] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:03:55,449] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:03:55,466] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:04:11,476] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:04:30,174] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:04:30,559] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:04:30,687] ERROR candidates — Ошибка скоринга #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:04:30,717] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:04:31,073] ERROR candidates — Ошибка скоринга #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:06:16,599] INFO candidates — Успешный вход в админ-панель: admin
+[2026-04-04 21:06:45,150] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:06:56,962] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:13:26,989] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:13:31,068] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:13:31,068] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:13:31,069] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:13:31,069] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:13:33,771] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:13:33,777] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:13:33,784] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:13:33,781] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:14:12,834] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:14:16,083] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:14:16,115] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:14:21,649] ERROR candidates — Ошибка скоринга #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:14:21,673] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:15:03,534] ERROR candidates — Ошибка скоринга #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:15:03,554] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:24:10,795] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:24:17,195] ERROR candidates — Ошибка скоринга #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:24:17,276] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:13,206] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:19,565] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:20,046] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:21,360] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:22,128] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:48:22,341] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:24,549] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:48:27,338] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:32,987] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:48:49,496] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:48:49,588] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:48:50,220] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:49:05,884] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 21:56:03,071] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 21:56:06,341] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 21:56:08,838] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 21:56:27,299] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
+[2026-04-04 22:09:37,404] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:09:42,114] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:09:42,349] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:09:44,442] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:09:44,445] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:09:55,213] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:10:00,985] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:00,986] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:00,985] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:00,986] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:01,025] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:01,191] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 22:10:01,644] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:01,724] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:01,730] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:01,781] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:01,841] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:01,858] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 22:10:28,208] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:10:29,797] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:10:44,165] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:10:49,246] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:10:59,114] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:13:43,957] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:31:28,593] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:32:05,686] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:32:20,640] WARNING candidates — Неудачная попытка входа: username=teacher
+[2026-04-04 22:32:31,568] WARNING candidates — Неудачная попытка входа: username=teacher
+[2026-04-04 22:32:37,857] INFO candidates — Вход в админ-панель: admin
+[2026-04-04 22:32:38,104] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:53:57,963] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 22:54:30,207] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
+[2026-04-04 22:55:49,061] INFO candidates — Учитель teacher1 рекомендовал ученика: Ералы Абуталиф
+[2026-04-04 22:56:07,318] INFO candidates — Выход из кабинета учителя: None
+[2026-04-04 22:56:16,436] INFO candidates — Вход в админ-панель: admin
+[2026-04-04 22:56:16,717] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:51:03,500] INFO candidates — Вход в админ-панель: admin
+[2026-04-04 23:51:03,655] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:06,721] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 23:55:08,087] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 23:55:08,337] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 23:55:08,519] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 23:55:08,686] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-04 23:55:08,937] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 23:55:08,966] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 23:55:08,983] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 23:55:09,011] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 23:55:09,014] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-04 23:55:09,083] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,151] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,153] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,173] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,215] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,216] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:09,216] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-04 23:55:13,523] WARNING candidates — bot_db недоступен (no such table: applications), используем локальную БД
+[2026-04-05 00:18:08,937] INFO candidates — Вход в админ-панель: admin
+[2026-04-05 00:19:17,560] INFO candidates — Выход из админ-панели
+[2026-04-05 00:19:26,433] WARNING candidates — Неудачная попытка входа: username=teacher
+[2026-04-05 00:19:30,560] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
+[2026-04-05 01:18:40,056] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
+[2026-04-05 02:46:18,328] INFO candidates — Вход в админ-панель: admin

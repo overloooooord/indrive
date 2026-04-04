@@ -1,0 +1,178 @@
+{% extends "frontend/base.html" %}
+{% block title %}Кабинет учителя — inVision U{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
+    <div>
+        <h1 style="font-size:1.8rem;font-weight:800;letter-spacing:-0.03em;">👩‍🏫 Кабинет учителя</h1>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">
+            {{ teacher_name }} &nbsp;·&nbsp; рекомендации учеников для inVision U
+        </p>
+    </div>
+    <a href="/teacher/logout/" class="btn btn-secondary">← Выйти</a>
+</div>
+<div class="card" style="margin-bottom:2rem;padding:1.75rem;">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;">
+        ✍️ Рекомендовать ученика
+    </div>
+    <div id="formError" style="display:none;background:var(--red-bg);color:var(--red);padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:1rem;"></div>
+    <div id="formSuccess" style="display:none;background:var(--green-bg);color:var(--green);padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:1rem;"></div>
+    <form id="nominationForm" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group" style="margin-bottom:0;">
+            <label style="display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">
+                ФИО ученика *
+            </label>
+            <input type="text" id="studentName" placeholder="Иванов Иван Иванович"
+                   style="width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label style="display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">
+                Контакты ученика * <span style="font-weight:400;color:var(--text-muted);">(телефон / email / Telegram)</span>
+            </label>
+            <input type="text" id="studentContacts" placeholder="+7 777 123 45 67 / @username"
+                   style="width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;">
+        </div>
+        <div class="form-group" style="margin-bottom:0;grid-column:1/-1;">
+            <label style="display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">
+                Почему следует принять? *
+            </label>
+            <textarea id="reason" rows="3" placeholder="Опишите, чем выделяется ученик, его потенциал и лидерские качества..."
+                      style="width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0;grid-column:1/-1;">
+            <label style="display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">
+                Достижения <span style="font-weight:400;color:var(--text-muted);">(олимпиады, проекты, награды — необязательно)</span>
+            </label>
+            <textarea id="achievements" rows="2" placeholder="Призёр республиканской олимпиады по физике 2025, основатель школьного проекта ..."
+                      style="width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;transition:border-color 0.2s;"></textarea>
+        </div>
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:0.5rem;">
+            <button type="submit" id="submitBtn" class="btn btn-accent" style="padding:12px 32px;font-size:0.95rem;">
+                <span id="submitText">📩 Отправить рекомендацию</span>
+            </button>
+        </div>
+    </form>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+    <h2 style="font-size:1.1rem;font-weight:700;">📋 Мои рекомендации</h2>
+    <span id="countBadge" style="font-size:0.85rem;color:var(--text-secondary);"></span>
+</div>
+<div id="nominationsList" style="display:flex;flex-direction:column;gap:1rem;">
+    <div style="text-align:center;padding:2rem;color:var(--text-muted);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">⏳</div>
+        Загрузка...
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const TEACHER_LOGIN = '{{ teacher_login }}';
+let nominations = [];
+function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+async function loadNominations() {
+    try {
+        const data = await api('/api/teacher/nominations/');
+        nominations = data.results || [];
+        document.getElementById('countBadge').textContent = `${nominations.length} рекомендаций`;
+        renderNominations();
+    } catch(e) {
+        document.getElementById('nominationsList').innerHTML = `
+            <div style="text-align:center;padding:2rem;color:var(--red);">⚠️ Ошибка загрузки: ${esc(e.message)}</div>`;
+    }
+}
+function renderNominations() {
+    const list = document.getElementById('nominationsList');
+    if (!nominations.length) {
+        list.innerHTML = `
+            <div style="text-align:center;padding:3rem;color:var(--text-muted);">
+                <div style="font-size:3rem;margin-bottom:1rem;opacity:0.4;">📭</div>
+                <div style="font-weight:600;margin-bottom:0.5rem;">Рекомендаций пока нет</div>
+                <div style="font-size:0.9rem;">Заполните форму выше, чтобы добавить первую</div>
+            </div>`;
+        return;
+    }
+    list.innerHTML = nominations.map(n => {
+        const statusMap = {
+            pending:  { label: '⏳ На рассмотрении', color: '#f59e0b', bg: '#f59e0b18' },
+            accepted: { label: '✅ Принято',          color: '#22c55e', bg: '#22c55e18' },
+            rejected: { label: '❌ Отклонено',        color: '#ef4444', bg: '#ef444418' },
+        };
+        const st = statusMap[n.status] || statusMap.pending;
+        return `
+        <div class="card" style="padding:1.25rem;border-left:3px solid ${st.color};">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                <div>
+                    <div style="font-weight:700;font-size:1.05rem;margin-bottom:3px;">${esc(n.student_name)}</div>
+                    <div style="color:var(--text-secondary);font-size:0.84rem;">📞 ${esc(n.student_contacts)}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                    <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.color}44;white-space:nowrap;">${st.label}</span>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">${esc(n.created_at)}</div>
+                </div>
+            </div>
+            <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">
+                <div>
+                    <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:3px;">Почему принять</div>
+                    <div style="font-size:0.88rem;color:var(--text-primary);line-height:1.5;">${esc(n.reason)}</div>
+                </div>
+                ${n.achievements ? `<div>
+                    <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:3px;">Достижения</div>
+                    <div style="font-size:0.88rem;color:var(--text-secondary);line-height:1.5;">${esc(n.achievements)}</div>
+                </div>` : ''}
+                ${n.admin_note ? `<div style="margin-top:4px;padding:8px 12px;background:${st.bg};border-radius:8px;border-left:2px solid ${st.color};">
+                    <div style="font-size:0.75rem;font-weight:600;color:${st.color};margin-bottom:3px;">Комментарий администратора</div>
+                    <div style="font-size:0.85rem;color:var(--text-primary);">${esc(n.admin_note)}</div>
+                </div>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+document.getElementById('nominationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errEl = document.getElementById('formError');
+    const okEl = document.getElementById('formSuccess');
+    errEl.style.display = 'none';
+    okEl.style.display = 'none';
+    const student_name = document.getElementById('studentName').value.trim();
+    const student_contacts = document.getElementById('studentContacts').value.trim();
+    const reason = document.getElementById('reason').value.trim();
+    const achievements = document.getElementById('achievements').value.trim();
+    if (!student_name || !student_contacts || !reason) {
+        errEl.textContent = 'Заполните обязательные поля: ФИО, контакты и обоснование';
+        errEl.style.display = 'block';
+        return;
+    }
+    btn.disabled = true;
+    document.getElementById('submitText').textContent = '⏳ Отправляю...';
+    try {
+        const result = await api('/api/teacher/nominations/', {
+            method: 'POST',
+            body: JSON.stringify({ student_name, student_contacts, reason, achievements }),
+        });
+        okEl.textContent = `✅ Рекомендация для ${result.student_name} успешно отправлена!`;
+        okEl.style.display = 'block';
+        // Reset form
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentContacts').value = '';
+        document.getElementById('reason').value = '';
+        document.getElementById('achievements').value = '';
+        // Reload list
+        await loadNominations();
+    } catch(err) {
+        errEl.textContent = `❌ ${err.message}`;
+        errEl.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        document.getElementById('submitText').textContent = '📩 Отправить рекомендацию';
+    }
+});
+// Focus styles
+document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('focus', () => el.style.borderColor = 'var(--accent)');
+    el.addEventListener('blur', () => el.style.borderColor = 'var(--border)');
+});
+loadNominations();
+</script>
+{% endblock %}

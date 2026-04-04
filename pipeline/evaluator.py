@@ -2,7 +2,6 @@ import json
 import os
 import numpy as np
 from typing import Dict, Any
-
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -13,66 +12,40 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.preprocessing import label_binarize
-
 from config import LABEL_NAMES, METRICS_DIR
 from trainer import (
     train_baseline_gpa,
     train_baseline_rules,
     train_baseline_logreg,
 )
-
-
 def evaluate_model(model, X_test: np.ndarray, y_test: np.ndarray) -> Dict[str, Any]:
-    """
-    Evaluate XGBoost model on test set.
-    Returns:
-        dict with all metrics
-    """
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)
-
     metrics = _compute_metrics(y_test, y_pred, y_proba, "XGBoost")
     return metrics
-
-
 def evaluate_baselines(
     X_train: np.ndarray,
     y_train: np.ndarray,
     X_test: np.ndarray,
     y_test: np.ndarray,
 ) -> Dict[str, Dict[str, Any]]:
-    """
-    Evaluate all baselines on the same test set.
-    """
     results = {}
-
-    # Baseline 1: GPA ranking
     print("\n--- Baseline 1: GPA Ranking ---")
     y_pred_gpa = train_baseline_gpa(X_test, y_test)
     results["GPA Ranking"] = _compute_metrics(y_test, y_pred_gpa, None, "GPA Ranking")
-
-    # Baseline 2: Rule-based
     print("\n--- Baseline 2: Rule-Based ---")
     y_pred_rules = train_baseline_rules(X_test, y_test)
     results["Rule-Based"] = _compute_metrics(y_test, y_pred_rules, None, "Rule-Based")
-
-    # Baseline 3: Logistic Regression
     print("\n--- Baseline 3: Logistic Regression ---")
     y_pred_lr = train_baseline_logreg(X_train, y_train, X_test)
     results["Logistic Regression"] = _compute_metrics(
         y_test, y_pred_lr, None, "Logistic Regression"
     )
-
     return results
-
-
 def comparison_table(
     model_metrics: Dict[str, Any],
     baseline_metrics: Dict[str, Dict[str, Any]],
 ) -> str:
-    """
-    Build a formatted comparison table.
-    """
     lines = []
     lines.append("")
     lines.append("=" * 75)
@@ -81,8 +54,6 @@ def comparison_table(
     header = f"{'Model':<25} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}"
     lines.append(header)
     lines.append("-" * 75)
-
-    # Baselines
     for name, metrics in baseline_metrics.items():
         line = (
             f"{name:<25} "
@@ -92,8 +63,6 @@ def comparison_table(
             f"{metrics['f1_macro']:>10.4f}"
         )
         lines.append(line)
-
-    # Our model
     lines.append("-" * 75)
     line = (
         f"{'XGBoost (Ours)':<25} "
@@ -104,36 +73,25 @@ def comparison_table(
     )
     lines.append(line)
     lines.append("=" * 75)
-
     if "auc_roc" in model_metrics:
         lines.append(f"\nXGBoost AUC-ROC (one-vs-rest): {model_metrics['auc_roc']:.4f}")
-
     table = "\n".join(lines)
     print(table)
     return table
-
-
 def format_confusion_matrix(y_test: np.ndarray, y_pred: np.ndarray, title: str = "") -> str:
-    """
-    Pretty-print confusion matrix.
-    """
     cm = confusion_matrix(y_test, y_pred)
     lines = []
     if title:
         lines.append(f"\n--- Confusion Matrix: {title} ---")
-
     lines.append(f"\n{'':>15} {'Pred reject':>13} {'Pred maybe':>13} {'Pred shortlist':>15}")
     for i, label in enumerate(LABEL_NAMES):
         row = f"  True {label:<10}"
         for j in range(3):
             row += f"{cm[i][j]:>13}"
         lines.append(row)
-
     result = "\n".join(lines)
     print(result)
     return result
-
-
 def error_analysis(
     model,
     X_test: np.ndarray,
@@ -141,15 +99,8 @@ def error_analysis(
     raw_candidates: list = None,
     test_indices: list = None,
 ) -> Dict[str, Any]:
-    """
-    Analyze where the model makes mistakes.
-
-    Returns:
-        dict with error breakdown and examples
-    """
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)
-
     errors = []
     for i in range(len(y_test)):
         if y_pred[i] != y_test[i]:
@@ -167,23 +118,17 @@ def error_analysis(
                 error["candidate_id"] = cand.get("id", "unknown")
                 error["candidate_name"] = cand.get("personal", {}).get("name", "unknown")
             errors.append(error)
-
-    # Categorize errors
     error_types = {}
     for e in errors:
         key = f"{e['true_label']} → {e['predicted_label']}"
         error_types[key] = error_types.get(key, 0) + 1
-
     total_errors = len(errors)
     total_samples = len(y_test)
-
     print(f"\n=== Error Analysis ===")
     print(f"Total errors: {total_errors}/{total_samples} ({total_errors / total_samples:.1%})")
     print(f"\nError breakdown:")
     for error_type, count in sorted(error_types.items(), key=lambda x: -x[1]):
         print(f"  {error_type}: {count}")
-
-    # Show top uncertain correct predictions (near the decision boundary)
     correct_mask = y_pred == y_test
     if correct_mask.any():
         correct_confidence = np.max(y_proba[correct_mask], axis=1)
@@ -196,16 +141,13 @@ def error_analysis(
                 f"Confidence: {np.max(y_proba[real_idx]):.3f}, "
                 f"Probs: {dict(zip(LABEL_NAMES, y_proba[real_idx].round(3)))}"
             )
-
     return {
         "total_errors": total_errors,
         "total_samples": total_samples,
         "error_rate": total_errors / total_samples,
         "error_types": error_types,
-        "errors": errors[:10],  # top 10 for reporting
+        "errors": errors[:10],
     }
-
-
 def save_evaluation_report(
     model_metrics: dict,
     baseline_metrics: dict,
@@ -213,10 +155,8 @@ def save_evaluation_report(
     error_report: dict,
     path: str = None,
 ):
-    """Save full evaluation report as JSON."""
     path = path or os.path.join(METRICS_DIR, "evaluation_report.json")
     os.makedirs(os.path.dirname(path), exist_ok=True)
-
     report = {
         "model_metrics": model_metrics,
         "baseline_metrics": baseline_metrics,
@@ -228,30 +168,19 @@ def save_evaluation_report(
             "error_types": error_report["error_types"],
         },
     }
-
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
-
     print(f"\nEvaluation report saved to {path}")
-
-
-# ============================================================
-# Helpers
-# ============================================================
-
 def _compute_metrics(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     y_proba: np.ndarray = None,
     model_name: str = "",
 ) -> Dict[str, Any]:
-    """Compute standard classification metrics."""
-
     acc = accuracy_score(y_true, y_pred)
     prec = precision_score(y_true, y_pred, average="macro", zero_division=0)
     rec = recall_score(y_true, y_pred, average="macro", zero_division=0)
     f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
-
     metrics = {
         "model": model_name,
         "accuracy": float(acc),
@@ -259,8 +188,6 @@ def _compute_metrics(
         "recall_macro": float(rec),
         "f1_macro": float(f1),
     }
-
-    # AUC-ROC (only if probabilities available)
     if y_proba is not None and len(np.unique(y_true)) > 1:
         try:
             y_bin = label_binarize(y_true, classes=[0, 1, 2])
@@ -268,8 +195,6 @@ def _compute_metrics(
             metrics["auc_roc"] = float(auc)
         except ValueError:
             metrics["auc_roc"] = None
-
-    # Per-class metrics
     report = classification_report(
         y_true, y_pred,
         target_names=LABEL_NAMES,
@@ -285,62 +210,34 @@ def _compute_metrics(
         }
         for label in LABEL_NAMES
     }
-
     print(f"\n[{model_name}] Acc={acc:.4f} | P={prec:.4f} | R={rec:.4f} | F1={f1:.4f}")
-
     return metrics
-
-
-# ============================================================
-# Main evaluation flow
-# ============================================================
-
 def evaluate(training_results: dict) -> dict:
-    """
-    Full evaluation pipeline.
-    Call this after trainer.train().
-    """
     model = training_results["model"]
     X_train = training_results["X_train"]
     X_test = training_results["X_test"]
     y_train = training_results["y_train"]
     y_test = training_results["y_test"]
     cv_results = training_results["cv_results"]
-
     print("\n" + "=" * 60)
     print("InVision U — Model Evaluation")
     print("=" * 60)
-
-    # 1. Evaluate our model
     print("\n--- Our Model: XGBoost ---")
     model_metrics = evaluate_model(model, X_test, y_test)
-
-    # 2. Confusion matrix
     y_pred = model.predict(X_test)
     format_confusion_matrix(y_test, y_pred, "XGBoost")
-
-    # 3. Baselines
     baseline_metrics = evaluate_baselines(X_train, y_train, X_test, y_test)
-
-    # 4. Comparison table
     comparison_table(model_metrics, baseline_metrics)
-
-    # 5. Error analysis
     error_report = error_analysis(model, X_test, y_test)
-
     save_evaluation_report(model_metrics, baseline_metrics, cv_results, error_report)
-
     return {
         "model_metrics": model_metrics,
         "baseline_metrics": baseline_metrics,
         "error_report": error_report,
     }
-
-
 if __name__ == "__main__":
     from trainer import train
     import sys
-
     dataset_path = sys.argv[1] if len(sys.argv) > 1 else "../data/synthetic_dataset.json"
     training_results = train(dataset_path)
     evaluate(training_results)

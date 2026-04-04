@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="InVision U — AI система отбора кандидатов">
+    <title>{% block title %}InVision U{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'frontend/style.css' %}">
+    <script>
+        // Apply saved theme immediately, before page renders (prevents flash)
+        (function() {
+            const t = localStorage.getItem('panel_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <div class="logo">iU</div>
+            InVision U
+        </a>
+        <div class="navbar-links">
+            <a href="/" id="nav-candidates">Кандидаты</a>
+            <a href="/panel/" id="nav-panel">Войти</a>
+            <button id="theme-toggle-btn" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);border-radius:100px;padding:6px 14px;cursor:pointer;font-size:0.82rem;color:var(--text-secondary);font-family:inherit;transition:var(--transition);" title="Переключить тему">🌙 Тема</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('panel_theme', next);
+            const btn = document.getElementById('theme-toggle-btn');
+            if (btn) btn.textContent = next === 'dark' ? '🌙 Тема' : '☀️ Тема';
+        }
+
+        // Sync toggle button label on load
+        (function() {
+            const t = document.documentElement.getAttribute('data-theme') || 'dark';
+            const btn = document.getElementById('theme-toggle-btn');
+            if (btn) btn.textContent = t === 'dark' ? '🌙 Тема' : '☀️ Тема';
+        })();
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        async function api(url, options = {}) {
+            const defaults = {
+                headers: { 'Content-Type': 'application/json' },
+            };
+            const resp = await fetch(url, { ...defaults, ...options });
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({ error: 'Ошибка сервера' }));
+                throw new Error(err.error || err.detail || 'Ошибка запроса');
+            }
+            return resp.json();
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

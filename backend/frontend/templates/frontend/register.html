@@ -1,0 +1,579 @@
+{% extends "frontend/base.html" %}
+{% block title %}Заявка — inVision U{% endblock %}
+{% block content %}
+<div id="progressBar" style="position:fixed;top:0;left:0;right:0;z-index:900;height:3px;background:transparent;">
+    <div id="progressFill" style="height:100%;background:var(--accent);transition:width 0.4s;width:0%;"></div>
+</div>
+<div style="max-width:700px;margin:2rem auto;padding:0 1rem;">
+<div id="stepIndicator" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:2rem;flex-wrap:wrap;">
+    <div class="step-dot active" data-step="1">1</div>
+    <div class="step-line"></div>
+    <div class="step-dot" data-step="2">2</div>
+    <div class="step-line"></div>
+    <div class="step-dot" data-step="3">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot" data-step="4">4</div>
+    <div class="step-line"></div>
+    <div class="step-dot" data-step="5">5</div>
+    <div class="step-line"></div>
+    <div class="step-dot" data-step="6">🎯</div>
+</div>
+<style>
+.step-dot {
+    width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:0.8rem;font-weight:700;background:var(--bg-card);border:2px solid var(--border);
+    color:var(--text-secondary);transition:all 0.3s;cursor:default;
+}
+.step-dot.active {border-color:var(--accent);color:var(--accent);}
+.step-dot.done {background:var(--accent);border-color:var(--accent);color:#000;}
+.step-line {width:24px;height:2px;background:var(--border);border-radius:1px;}
+.form-label {font-size:0.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:0.04em;}
+.form-input {width:100%;padding:0.9rem 1rem;background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.95rem;transition:border-color 0.2s;outline:none;box-sizing:border-box;}
+.form-input:focus {border-color:var(--accent);}
+.form-input::placeholder {color:var(--text-muted);}
+select.form-input option {background:var(--bg-card);}
+.field-group {display:flex;flex-direction:column;gap:6px;margin-bottom:1.2rem;}
+.add-btn {display:flex;align-items:center;gap:6px;padding:0.6rem 1rem;background:transparent;border:1.5px dashed var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;width:100%;transition:all 0.2s;}
+.add-btn:hover {border-color:var(--accent);color:var(--accent);}
+.sub-card {background:var(--bg-hover);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative;}
+.sub-card .remove-btn {position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;}
+.sub-card .remove-btn:hover {color:#ef4444;background:rgba(239,68,68,0.1);}
+.sub-grid {display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+@media(max-width:500px){.sub-grid{grid-template-columns:1fr;}}
+.step-title {font-size:1.4rem;font-weight:800;margin-bottom:0.3rem;}
+.step-subtitle {color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;}
+.nav-btns {display:flex;gap:0.75rem;margin-top:1.5rem;}
+.btn-back {flex:1;padding:0.9rem;background:transparent;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:0.95rem;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover {border-color:var(--accent);color:var(--accent);}
+.btn-next {flex:2;padding:0.9rem;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#000;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-next:hover {background:#d4f000;}
+/* SLPI scenario styles */
+.slpi-timer {font-size:2rem;font-weight:800;color:var(--accent);text-align:center;margin:1rem 0;}
+.slpi-timer-bar {height:8px;background:var(--bg-input);border-radius:4px;margin-bottom:1.5rem;overflow:hidden;}
+.slpi-timer-fill {height:100%;background:var(--accent);border-radius:4px;transition:width 1s linear;}
+.slpi-question {font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:1.5rem;padding:1rem;background:var(--bg-hover);border-radius:var(--radius-sm);border-left:3px solid var(--accent);}
+.slpi-option {display:flex;align-items:flex-start;gap:0.75rem;padding:0.85rem 1rem;margin-bottom:0.5rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;}
+.slpi-option:hover {border-color:var(--accent);background:var(--bg-hover);}
+.slpi-option.selected {border-color:var(--accent);background:rgba(191,255,0,0.08);}
+.slpi-option-letter {width:26px;height:26px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;flex-shrink:0;transition:all 0.2s;}
+.slpi-option.selected .slpi-option-letter {background:var(--accent);color:#000;}
+.slpi-timeout {text-align:center;padding:1.5rem;color:var(--text-muted);}
+.slpi-progress {font-size:0.8rem;color:var(--text-secondary);text-align:center;margin-bottom:1rem;}
+</style>
+<div class="card" id="step1" data-step="1">
+    <h2 class="step-title">👋 Личная информация</h2>
+    <p class="step-subtitle">Шаг 1 из 6</p>
+    <div class="field-group"><label class="form-label">ФИО *</label><input class="form-input" type="text" id="name" placeholder="Айгерим Нурланова" required></div>
+    <div class="sub-grid">
+        <div class="field-group"><label class="form-label">Возраст *</label><input class="form-input" type="number" id="age" min="14" max="25" placeholder="17" required></div>
+        <div class="field-group"><label class="form-label">Telegram @username</label><input class="form-input" type="text" id="telegram_username" placeholder="@myusername"></div>
+    </div>
+    <div class="sub-grid">
+        <div class="field-group"><label class="form-label">Регион *</label>
+            <select class="form-input" id="region" required><option value="">Выберите регион</option></select>
+        </div>
+        <div class="field-group"><label class="form-label">Город *</label>
+            <select class="form-input" id="city" required><option value="">Сначала выберите регион</option></select>
+        </div>
+    </div>
+    <div class="sub-grid">
+        <div class="field-group"><label class="form-label">Тип школы</label>
+            <select class="form-input" id="school_type">
+                <option value="general">Общеобразовательная</option>
+                <option value="lyceum">Лицей</option>
+                <option value="gymnasium">Гимназия</option>
+                <option value="specialized">Специализированная</option>
+                <option value="private">Частная</option>
+                <option value="homeschool">Домашнее обучение</option>
+                <option value="college">Колледж</option>
+                <option value="other">Другое</option>
+            </select>
+        </div>
+        <div class="field-group"><label class="form-label">Языки</label><input class="form-input" type="text" id="languages" placeholder="Казахский, Русский, Английский"></div>
+    </div>
+    <div class="nav-btns"><button class="btn-next" onclick="nextStep(1)">Далее →</button></div>
+</div>
+<div class="card" id="step2" data-step="2" style="display:none;">
+    <h2 class="step-title">🎓 Образование</h2>
+    <p class="step-subtitle">Шаг 2 из 6</p>
+    <div class="field-group"><label class="form-label">GPA (0–5) *</label><input class="form-input" type="number" id="gpa" min="0" max="5" step="0.1" placeholder="4.5" required></div>
+    <div class="field-group">
+        <label class="form-label">IELTS балл (если есть)</label>
+        <input class="form-input" type="number" id="ielts_score" min="0" max="9" step="0.5" placeholder="6.5">
+    </div>
+    <div class="field-group">
+        <label class="form-label">ЕНТ балл (если есть)</label>
+        <input class="form-input" type="number" id="ent_score" min="0" max="140" step="1" placeholder="120">
+    </div>
+    <div style="margin-top:1rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <label class="form-label" style="margin:0;">Олимпиады</label>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="addOlympiad()">+ Добавить</button>
+        </div>
+        <div id="olympiadsContainer"></div>
+    </div>
+    <div style="margin-top:1rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <label class="form-label" style="margin:0;">Онлайн-курсы</label>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="addCourse()">+ Добавить</button>
+        </div>
+        <div id="coursesContainer"></div>
+    </div>
+    <div class="nav-btns">
+        <button class="btn-back" onclick="prevStep(2)">← Назад</button>
+        <button class="btn-next" onclick="nextStep(2)">Далее →</button>
+    </div>
+</div>
+<div class="card" id="step3" data-step="3" style="display:none;">
+    <h2 class="step-title">🚀 Проекты и опыт</h2>
+    <p class="step-subtitle">Шаг 3 из 6</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <label class="form-label" style="margin:0;">Твои проекты</label>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="addProject()">+ Добавить проект</button>
+    </div>
+    <div id="projectsContainer">
+        <div style="padding:2rem;text-align:center;color:var(--text-muted);border:1.5px dashed var(--border);border-radius:var(--radius-sm);font-size:0.9rem;">
+            Добавь хотя бы один проект, в котором ты участвовал(а)
+        </div>
+    </div>
+    <div class="nav-btns">
+        <button class="btn-back" onclick="prevStep(3)">← Назад</button>
+        <button class="btn-next" onclick="nextStep(3)">Далее →</button>
+    </div>
+</div>
+<div class="card" id="step4" data-step="4" style="display:none;">
+    <h2 class="step-title">📝 Эссе</h2>
+    <p class="step-subtitle">Шаг 4 из 6 · Минимум 200 слов</p>
+    <div class="field-group">
+        <label class="form-label">Твоё лидерское эссе *</label>
+        <textarea class="form-input" id="essayText" rows="10" style="resize:vertical;" placeholder="Расскажи историю, после которой ты изменил(а) своё отношение к чему-то важному. Как этот опыт сформировал тебя как лидера?..."></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:0.8rem;"><span id="wordCount" style="color:var(--text-muted);">0 слов (минимум 200)</span></div>
+    </div>
+    <div class="nav-btns">
+        <button class="btn-back" onclick="prevStep(4)">← Назад</button>
+        <button class="btn-next" onclick="nextStep(4)">Далее →</button>
+    </div>
+</div>
+<div class="card" id="step5" data-step="5" style="display:none;">
+    <h2 class="step-title">🎯 Лидерский профиль</h2>
+    <p class="step-subtitle">Шаг 5 из 6 · Ответь быстро и честно — нет правильных ответов</p>
+    <div id="slpiIntro">
+        <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:1.5rem;margin-bottom:1.5rem;border-left:3px solid var(--accent);">
+            <div style="font-weight:700;margin-bottom:0.5rem;">Как это работает:</div>
+            <ul style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin:0;padding-left:1.2rem;">
+                <li>5 ситуаций — каждая с выбором из 4 действий</li>
+                <li>После первого выбора — уточняющий вопрос</li>
+                <li>На каждый ответ у тебя есть <strong style="color:var(--accent);">25 секунд</strong></li>
+                <li>Не думай слишком долго — первый импульс важнее</li>
+            </ul>
+        </div>
+        <div style="text-align:center;">
+            <button class="btn-next" style="flex:none;padding:0.9rem 3rem;" onclick="startSlpi()">▶ Начать →</button>
+        </div>
+    </div>
+    <div id="slpiGame" style="display:none;">
+        <div class="slpi-progress" id="slpiProgress">Сценарий 1 из 5</div>
+        <div class="slpi-timer-bar"><div class="slpi-timer-fill" id="timerFill" style="width:100%;"></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <div style="font-size:0.8rem;color:var(--text-muted);" id="timerLabel">⏱ 25 сек</div>
+        </div>
+        <div class="slpi-question" id="slpiQuestion"></div>
+        <div id="slpiOptions"></div>
+        <div class="slpi-timeout" id="slpiTimeout" style="display:none;">⏰ Время вышло — засчитывается первый вариант</div>
+    </div>
+    <div id="slpiDone" style="display:none;text-align:center;padding:2rem 0;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
+        <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">Профиль записан!</div>
+        <div style="color:var(--text-secondary);margin-bottom:1.5rem;">Твои лидерские паттерны сохранены</div>
+        <button class="btn-next" style="padding:0.9rem 3rem;" onclick="nextStep(5)">Далее →</button>
+    </div>
+    <div class="nav-btns" id="slpiBtns">
+        <button class="btn-back" onclick="prevStep(5)">← Назад</button>
+    </div>
+</div>
+<div class="card" id="step6" data-step="6" style="display:none;">
+    <h2 class="step-title">✅ Всё готово!</h2>
+    <p class="step-subtitle">Шаг 6 из 6 · Проверь и отправь</p>
+    <div id="summaryBlock" style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:1.2rem;font-size:0.9rem;line-height:1.8;margin-bottom:1.5rem;color:var(--text-secondary);"></div>
+    <div class="nav-btns">
+        <button class="btn-back" onclick="prevStep(6)">← Назад</button>
+        <button class="btn-next" id="submitBtn" onclick="submitForm()">📨 Отправить заявку →</button>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let currentStep = 1;
+const TOTAL_STEPS = 6;
+// ── Regions & Cities ──────────────────────────────────────
+const REGIONS = {
+    "Астана": ["Астана"],
+    "Алматы": ["Алматы"],
+    "Шымкент": ["Шымкент"],
+    "Алматинская область": ["Талдыкорган","Капшагай","Текели","Талгар","Каскелен","Есик","Жаркент"],
+    "Акмолинская область": ["Кокшетау","Степногорск","Щучинск"],
+    "Актюбинская область": ["Актобе","Хромтау","Кандыагаш","Алга"],
+    "Атырауская область": ["Атырау","Кульсары"],
+    "Восточно-Казахстанская область": ["Усть-Каменогорск","Семей","Риддер","Курчатов"],
+    "Жамбылская область": ["Тараз","Шу","Каратау"],
+    "Западно-Казахстанская область": ["Уральск","Аксай"],
+    "Карагандинская область": ["Караганда","Темиртау","Жезказган","Балхаш","Шахтинск"],
+    "Костанайская область": ["Костанай","Рудный","Лисаковск","Аркалык"],
+    "Кызылординская область": ["Кызылорда","Байконыр"],
+    "Мангистауская область": ["Актау","Жанаозен"],
+    "Павлодарская область": ["Павлодар","Экибастуз","Аксу"],
+    "Северо-Казахстанская область": ["Петропавловск"],
+    "Туркестанская область": ["Туркестан","Кентау","Арыс"],
+    "Абай область": ["Семей"],
+    "Жетісу область": ["Талдыкорган"],
+};
+const regionSelect = document.getElementById('region');
+const citySelect = document.getElementById('city');
+Object.keys(REGIONS).sort().forEach(r => {
+    const opt = document.createElement('option'); opt.value = r; opt.textContent = r;
+    regionSelect.appendChild(opt);
+});
+regionSelect.addEventListener('change', () => {
+    const region = regionSelect.value;
+    citySelect.innerHTML = '';
+    if (!region) { citySelect.innerHTML = '<option value="">Сначала выберите регион</option>'; return; }
+    const cities = REGIONS[region] || [];
+    citySelect.innerHTML = '<option value="">Выберите город</option>';
+    cities.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; citySelect.appendChild(opt); });
+});
+// ── Step navigation ───────────────────────────────────────
+function showStep(n) {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
+        document.getElementById(`step${i}`).style.display = i === n ? 'block' : 'none';
+    }
+    currentStep = n;
+    document.querySelectorAll('.step-dot').forEach(d => {
+        const s = parseInt(d.dataset.step);
+        d.classList.remove('active','done');
+        if (s < n) d.classList.add('done');
+        else if (s === n) d.classList.add('active');
+    });
+    document.getElementById('progressFill').style.width = `${((n-1)/(TOTAL_STEPS-1))*100}%`;
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+function nextStep(from) {
+    if (from === 1) {
+        if (!document.getElementById('name').value.trim()) return showToast('Укажи ФИО', 'error');
+        if (!document.getElementById('age').value) return showToast('Укажи возраст', 'error');
+        if (!document.getElementById('region').value) return showToast('Выбери регион', 'error');
+        if (!document.getElementById('city').value) return showToast('Выбери город', 'error');
+    }
+    if (from === 4) {
+        const wc = countWords(document.getElementById('essayText').value);
+        if (wc < 200) return showToast(`Эссе минимум 200 слов (сейчас ${wc})`, 'error');
+    }
+    if (from === 6) return submitForm();
+    showStep(from + 1);
+    if (from + 1 === 6) buildSummary();
+}
+function prevStep(from) { showStep(from - 1); }
+function countWords(text) { return text.trim().split(/\s+/).filter(w => w.length > 0).length; }
+document.getElementById('essayText')?.addEventListener('input', () => {
+    const wc = countWords(document.getElementById('essayText').value);
+    const el = document.getElementById('wordCount');
+    el.textContent = `${wc} слов ${wc >= 200 ? '✓' : `(минимум 200)`}`;
+    el.style.color = wc >= 200 ? 'var(--accent)' : 'var(--text-muted)';
+});
+// ── Dynamic items ─────────────────────────────────────────
+let olympiadCount = 0, courseCount = 0, projectCount = 0;
+function addOlympiad() {
+    olympiadCount++;
+    const id = olympiadCount;
+    const c = document.getElementById('olympiadsContainer');
+    if (c.querySelector('.placeholder-empty')) c.innerHTML = '';
+    c.insertAdjacentHTML('beforeend', `
+    <div class="sub-card" id="olympiad_${id}">
+        <button type="button" class="remove-btn" onclick="document.getElementById('olympiad_${id}').remove()">✕</button>
+        <div class="sub-grid">
+            <div class="field-group"><label class="form-label">Предмет</label><input class="form-input" id="oly_subj_${id}" placeholder="Математика"></div>
+            <div class="field-group"><label class="form-label">Год</label><input class="form-input" type="number" id="oly_year_${id}" min="2015" max="2026" placeholder="2024"></div>
+        </div>
+        <div class="sub-grid">
+            <div class="field-group"><label class="form-label">Уровень</label>
+                <select class="form-input" id="oly_level_${id}">
+                    <option value="school">Школьный</option><option value="city">Городской</option>
+                    <option value="regional">Региональный</option><option value="republican">Республиканский</option>
+                    <option value="international">Международный</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="form-label">Призовое место?</label>
+                <select class="form-input" id="oly_prize_${id}"><option value="false">Нет</option><option value="true">Да</option></select>
+            </div>
+        </div>
+    </div>`);
+}
+function addCourse() {
+    courseCount++;
+    const id = courseCount;
+    document.getElementById('coursesContainer').insertAdjacentHTML('beforeend', `
+    <div class="sub-card" id="course_${id}">
+        <button type="button" class="remove-btn" onclick="document.getElementById('course_${id}').remove()">✕</button>
+        <div class="sub-grid">
+            <div class="field-group"><label class="form-label">Название курса</label><input class="form-input" id="crs_name_${id}" placeholder="CS50"></div>
+            <div class="field-group"><label class="form-label">Платформа</label><input class="form-input" id="crs_platform_${id}" placeholder="Coursera, edX..."></div>
+        </div>
+        <div class="field-group"><label class="form-label">Завершён?</label>
+            <select class="form-input" id="crs_completed_${id}"><option value="true">Да</option><option value="false">В процессе</option></select>
+        </div>
+    </div>`);
+}
+function addProject() {
+    projectCount++;
+    const id = projectCount;
+    const c = document.getElementById('projectsContainer');
+    if (c.querySelector('div:not([id])')) c.innerHTML = '';
+    c.insertAdjacentHTML('beforeend', `
+    <div class="sub-card" id="project_${id}">
+        <button type="button" class="remove-btn" onclick="document.getElementById('project_${id}').remove()">✕</button>
+        <div class="field-group"><label class="form-label">Название проекта *</label><input class="form-input" id="proj_name_${id}" placeholder="Название"></div>
+        <div class="sub-grid">
+            <div class="field-group"><label class="form-label">Тип</label>
+                <select class="form-input" id="proj_type_${id}">
+                    <option value="technical">Технический</option><option value="social">Социальный</option>
+                    <option value="creative">Творческий</option><option value="business">Бизнес</option>
+                    <option value="educational">Образовательный</option><option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="form-label">Роль</label>
+                <select class="form-input" id="proj_role_${id}">
+                    <option value="founder">Основатель</option><option value="co_founder">Со-основатель</option>
+                    <option value="key_member">Ключевой участник</option><option value="participant">Участник</option>
+                </select>
+            </div>
+        </div>
+        <div class="sub-grid">
+            <div class="field-group"><label class="form-label">Год</label><input class="form-input" type="number" id="proj_year_${id}" min="2015" max="2026" placeholder="2024"></div>
+            <div class="field-group"><label class="form-label">Размер команды</label><input class="form-input" type="number" id="proj_team_${id}" min="1" placeholder="5"></div>
+        </div>
+        <div class="field-group"><label class="form-label">Описание</label><textarea class="form-input" id="proj_desc_${id}" rows="2" placeholder="Кратко опишите проект и ваш вклад..."></textarea></div>
+    </div>`);
+}
+// ── SLPI Scenarios (from bot/handlers.py) ─────────────────
+const SCENARIOS = [
+    {
+        entry: {
+            text: "Ты отвечаешь за школьное мероприятие. За 3 дня до события главный организатор выбыл — заболел. Всё держалось на нём. Что делаешь?",
+            options: {A:"Беру всё на себя — справлюсь", B:"Собираю команду и распределяю задачи", C:"Срочно ищу замену организатору", D:"Сообщаю куратору / классному руководителю"}
+        },
+        branches: {
+            A: {text:"К вечеру ты понимаешь, что не успеваешь. Задач слишком много, до события 2 дня. Что дальше?", options:{A:"Работаю всю ночь — сдаться нельзя", B:"Иду к команде за помощью — надо было сразу", C:"Прошу куратора сдвинуть дату мероприятия", D:"Упрощаю программу — делаю только главное"}},
+            B: {text:"Один человек в команде не справляется со своей частью. До мероприятия 2 дня. Что делаешь?", options:{A:"Оставляю — каждый заслуживает шанс", B:"Заменяю — результат команды важнее", C:"Сначала говорю с ним напрямую — узнаю причину", D:"Тихо перераспределяю его задачи на других"}},
+            C: {text:"Новый организатор согласен помочь, но просит больше бюджета — иначе не берётся. Бюджет фиксирован. Что делаешь?", options:{A:"Соглашаюсь — найду деньги где-нибудь", B:"Отказываю — буду искать другого", C:"Торгуюсь — предлагаю что-то нематериальное взамен", D:"Возвращаюсь к идее сделать всё силами команды"}},
+            D: {text:"Куратор отвечает: «Это ваша ответственность — разбирайтесь сами». Что делаешь?", options:{A:"Принимаю — иду и сам(а) решаю проблему", B:"Объясняю, что один(а) не справлюсь — прошу минимального участия", C:"Предлагаю конкретный план и прошу только одобрение", D:"Нахожу другого взрослого, который может помочь"}}
+        }
+    },
+    {
+        entry: {
+            text: "В вашем проекте двое участников поссорились. Они отказываются работать вместе. Работа стоит. Ты лидер. Что делаешь?",
+            options: {A:"Говорю им решить это самостоятельно — взрослые люди", B:"Разговариваю с каждым отдельно — сначала выслушиваю", C:"Собираю всех троих — решаем открыто", D:"Перераспределяю задачи так, чтобы они не пересекались"}
+        },
+        branches: {
+            A: {text:"Конфликт не утихает. Уже неделя. Проект под угрозой срыва. Что теперь?", options:{A:"Всё же вмешиваюсь — провожу разговор с каждым", B:"Ставлю ультиматум: мир или выходите из команды", C:"Временно беру их задачи на себя", D:"Иду к куратору — признаю, что не справляюсь"}},
+            B: {text:"После разговора один согласился двигаться дальше. Второй по-прежнему держит обиду — не идёт на контакт. Что делаешь?", options:{A:"Даю время — обиды проходят сами", B:"Снова говорю лично — ищу корень проблемы", C:"Меняю его роль в проекте — меньше пересечений", D:"Признаю его чувства публично перед командой"}},
+            C: {text:"На общем разговоре один из них начинает говорить резко. Напряжение растёт. Остальные молчат. Как реагируешь?", options:{A:"Останавливаю: «Давайте без повышенного тона»", B:"Даю выговориться — пусть скажет всё", C:"Переключаю на задачи: «Вернёмся к проекту»", D:"Делаю паузу — предлагаю продолжить через час"}},
+            D: {text:"После перераспределения один из них чувствует себя отодвинутым. Он(а) уходит из проекта. Что делаешь?", options:{A:"Принимаю решение — это его право", B:"Иду за ним(ей) — пробую поговорить лично", C:"Ищу нового участника и двигаюсь дальше", D:"Признаю публично, что допустил(а) ошибку в управлении"}}
+        }
+    },
+    {
+        entry: {
+            text: "У тебя есть идея, которая улучшит ваш школьный проект. Но классный руководитель против — «делайте как всегда». Что делаешь?",
+            options: {A:"Принимаю отказ — не стоит создавать конфликт", B:"Прошу объяснить причину отказа", C:"Реализую идею в рамках того, что уже разрешено", D:"Иду выше — к завучу или директору"}
+        },
+        branches: {
+            A: {text:"Проект прошёл. Ты видишь: твоя идея сработала бы лучше. Другие тоже это заметили. Что дальше?", options:{A:"Ничего — в следующий раз промолчу", B:"Готовлю аргументы — предложу снова на следующем проекте", C:"Реализую идею самостоятельно в другом месте", D:"Собираю мнения команды и иду с общим запросом"}},
+            B: {text:"Учитель объяснил причину. Ты не согласен(а), но логику понял(а). Что делаешь?", options:{A:"Принимаю — доверяю опыту учителя", B:"Предлагаю компромисс — частично изменить подход", C:"Прошу разрешения протестировать идею в маленьком масштабе", D:"Остаюсь при своём — буду доказывать делом, не словами"}},
+            C: {text:"Другие участники заметили твой подход. Они хотят сделать так же. Учитель видит результат. Что делаешь?", options:{A:"Рассказываю всем, как это работает — делюсь открыто", B:"Предлагаю оформить это как официальное улучшение", C:"Отхожу в сторону — пусть сами разбираются", D:"Предлагаю создать небольшую группу для внедрения"}},
+            D: {text:"Завуч тоже отказал — поддержал учителя. Идея заблокирована на двух уровнях. Что делаешь?", options:{A:"Принимаю — система решила, уважаю решение", B:"Прошу встречу с обоими — хочу показать конкретные аргументы", C:"Реализую идею вне школьного контекста — в личном проекте", D:"Нахожу союзников среди одноклассников или родителей"}}
+        }
+    },
+    {
+        entry: {
+            text: "Участник твоей команды провалил важную часть работы. Он(а) чувствует себя ужасно и хочет выйти из проекта. Что делаешь?",
+            options: {A:"Принимаю решение — его право уйти", B:"Разговариваю с ним(ей) — хочу понять, что случилось", C:"Перераспределяю задачи, чтобы снизить его(её) нагрузку", D:"Прошу команду публично поддержать его(её)"}
+        },
+        branches: {
+            A: {text:"Команда расстроена. Несколько человек считают, что ты должен(на) был(а) его удержать. Что делаешь?", options:{A:"Объясняю команде своё решение — почему принял(а) его уход", B:"Всё же иду к ушедшему — пробую поговорить сейчас", C:"Признаю, что, возможно, стоило поступить иначе", D:"Фокусирую команду на задачах — сейчас не время для разбора"}},
+            B: {text:"Выясняется: провал был из-за проблем дома. Он(а) боится подвести снова. Как реагируешь?", options:{A:"Предлагаю взять паузу — вернуться, когда будет готов(а)", B:"Даю задачу попроще — чтобы восстановить уверенность", C:"Говорю честно: «Мы с тобой, что бы ни случилось»", D:"Предлагаю вместе поговорить с куратором"}},
+            C: {text:"Участник остался. Но другие в команде недовольны: «Почему ему меньше задач? Это несправедливо». Что делаешь?", options:{A:"Объясняю команде ситуацию — без лишних деталей", B:"Восстанавливаю нагрузку — справедливость важнее", C:"Даю команде высказаться — слушаю без защиты", D:"Прошу всех временно взять чуть больше — объясняю зачем"}},
+            D: {text:"После публичной поддержки участник остался. Через неделю снова не справляется. Ситуация повторяется. Что делаешь?", options:{A:"Разговариваю снова — ищу системную причину", B:"Меняю его роль принципиально — другой тип задач", C:"Честно говорю: «Вижу паттерн. Нужно что-то изменить»", D:"Подключаю куратора — это уже за пределами моей роли"}}
+        }
+    },
+    {
+        entry: {
+            text: "Два проекта, в которых ты лидер, пересеклись по срокам. Нужно выбрать, куда вкладывать больше сил. Оба важны для тебя. Что делаешь?",
+            options: {A:"Выбираю более важный и фокусируюсь только на нём", B:"Пытаюсь вести оба — на максимуме усилий", C:"Ищу, кто может взять один из проектов", D:"Честно говорю обеим командам о ситуации"}
+        },
+        branches: {
+            A: {text:"Команда второго проекта чувствует себя брошенной. Несколько человек говорят это тебе напрямую. Что делаешь?", options:{A:"Объясняю причину выбора честно", B:"Нахожу время хотя бы для ключевых моментов второго проекта", C:"Предлагаю кому-то из них взять лидерство", D:"Признаю вслух, что взял(а) на себя слишком много"}},
+            B: {text:"Через 10 дней качество в обоих проектах падает. Команды это замечают. Что делаешь?", options:{A:"Продолжаю — лучше плохо, чем бросить", B:"Признаю и делаю выбор в пользу одного", C:"Прошу команды взять на себя больше ответственности", D:"Открыто говорю кураторам обоих проектов о ситуации"}},
+            C: {text:"Человек, которому ты передал(а) проект, справляется хуже, чем ты ожидал(а). Команда недовольна. Что делаешь?", options:{A:"Возвращаюсь и помогаю — объясняю, как делал(а) сам(а)", B:"Даю ему(ей) ещё время — это его(её) опыт, не мой", C:"Предлагаю работать вместе на ключевых этапах", D:"Нахожу другого человека на эту роль"}},
+            D: {text:"Одна из команд предлагает объединить два проекта в один. Ты видишь риски — разные цели, разные люди. Что делаешь?", options:{A:"Соглашаюсь — совместное решение команды важнее моих опасений", B:"Выдвигаю условия объединения — только если...", C:"Предлагаю сначала пилот — один совместный этап, потом решим", D:"Отказываюсь и объясняю риски — честно, не уклоняясь"}}
+        }
+    }
+];
+const TIMER_SECONDS = 25;
+let slpiState = { idx:0, phase:'entry', entryChoice:null, choices:{}, timerInterval:null };
+function startSlpi() {
+    document.getElementById('slpiIntro').style.display = 'none';
+    document.getElementById('slpiBtns').style.display = 'none';
+    document.getElementById('slpiGame').style.display = 'block';
+    slpiState = { idx:0, phase:'entry', entryChoice:null, choices:{}, timerInterval:null };
+    renderSlpiQuestion();
+}
+function renderSlpiQuestion() {
+    const sc = SCENARIOS[slpiState.idx];
+    const q = slpiState.phase === 'entry' ? sc.entry : sc.branches[slpiState.entryChoice];
+    const total = SCENARIOS.length * 2;
+    const current = slpiState.idx * 2 + (slpiState.phase === 'entry' ? 1 : 2);
+    document.getElementById('slpiProgress').textContent = `Вопрос ${current} из ${total}`;
+    document.getElementById('slpiQuestion').textContent = q.text;
+    document.getElementById('slpiTimeout').style.display = 'none';
+    const optionsEl = document.getElementById('slpiOptions');
+    optionsEl.innerHTML = Object.entries(q.options).map(([ltr, text]) => `
+        <div class="slpi-option" data-letter="${ltr}" onclick="selectSlpi('${ltr}')">
+            <div class="slpi-option-letter">${ltr}</div>
+            <div style="font-size:0.9rem;line-height:1.5;">${text}</div>
+        </div>`).join('');
+    startTimer();
+}
+let timerSeconds = TIMER_SECONDS;
+function startTimer() {
+    clearInterval(slpiState.timerInterval);
+    timerSeconds = TIMER_SECONDS;
+    updateTimerDisplay();
+    slpiState.timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        if (timerSeconds <= 0) {
+            clearInterval(slpiState.timerInterval);
+            document.getElementById('slpiTimeout').style.display = 'block';
+            setTimeout(() => selectSlpi('A', true), 1500);
+        }
+    }, 1000);
+}
+function updateTimerDisplay() {
+    document.getElementById('timerLabel').textContent = `⏱ ${timerSeconds} сек`;
+    document.getElementById('timerFill').style.width = `${(timerSeconds/TIMER_SECONDS)*100}%`;
+    const pct = timerSeconds / TIMER_SECONDS;
+    document.getElementById('timerFill').style.background = pct > 0.5 ? 'var(--accent)' : pct > 0.25 ? '#f59e0b' : '#ef4444';
+}
+function selectSlpi(letter, timeout = false) {
+    clearInterval(slpiState.timerInterval);
+    if (!timeout) {
+        document.querySelectorAll('.slpi-option').forEach(el => {
+            el.classList.toggle('selected', el.dataset.letter === letter);
+        });
+    }
+    setTimeout(() => advanceSlpi(letter), 500);
+}
+function advanceSlpi(letter) {
+    const sc = SCENARIOS[slpiState.idx];
+    const scId = `sc${slpiState.idx + 1}`;
+    if (slpiState.phase === 'entry') {
+        slpiState.entryChoice = letter;
+        slpiState.choices[scId] = { entry: letter };
+        slpiState.phase = 'branch';
+        renderSlpiQuestion();
+    } else {
+        slpiState.choices[scId].branch = letter;
+        slpiState.idx++;
+        if (slpiState.idx < SCENARIOS.length) {
+            slpiState.phase = 'entry';
+            slpiState.entryChoice = null;
+            renderSlpiQuestion();
+        } else {
+            document.getElementById('slpiGame').style.display = 'none';
+            document.getElementById('slpiDone').style.display = 'block';
+        }
+    }
+}
+// ── Summary ───────────────────────────────────────────────
+function buildSummary() {
+    const name = document.getElementById('name').value;
+    const city = document.getElementById('city').value;
+    const gpa = document.getElementById('gpa').value;
+    const wc = countWords(document.getElementById('essayText').value);
+    const prj = document.querySelectorAll('[id^="project_"]').length;
+    const ol = document.querySelectorAll('[id^="olympiad_"]').length;
+    const slpiDone = Object.keys(slpiState.choices).length === SCENARIOS.length;
+    document.getElementById('summaryBlock').innerHTML = `
+        <div><strong>👤 Кандидат:</strong> ${name}, ${city}</div>
+        <div><strong>🎓 GPA:</strong> ${gpa || '—'}</div>
+        <div><strong>🚀 Проектов:</strong> ${prj} · <strong>Олимпиад:</strong> ${ol}</div>
+        <div><strong>📝 Эссе:</strong> ${wc} слов</div>
+        <div><strong>🎯 SLPI профиль:</strong> ${slpiDone ? '✅ Записан' : '⚠️ Не пройден — вернись к шагу 5'}</div>
+    `;
+}
+// ── Submit ────────────────────────────────────────────────
+async function submitForm() {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = '⏳ Отправляю...';
+    const olympiads = [];
+    document.querySelectorAll('[id^="olympiad_"]').forEach(el => {
+        const id = el.id.split('_')[1];
+        const subj = document.getElementById(`oly_subj_${id}`);
+        if (subj?.value) olympiads.push({
+            subject: subj.value,
+            level: document.getElementById(`oly_level_${id}`).value,
+            prize: document.getElementById(`oly_prize_${id}`).value === 'true',
+            year: parseInt(document.getElementById(`oly_year_${id}`).value) || 2024,
+        });
+    });
+    const courses = [];
+    document.querySelectorAll('[id^="course_"]').forEach(el => {
+        const id = el.id.split('_')[1];
+        const name = document.getElementById(`crs_name_${id}`);
+        if (name?.value) courses.push({
+            name: name.value,
+            platform: document.getElementById(`crs_platform_${id}`).value,
+            completed: document.getElementById(`crs_completed_${id}`).value === 'true',
+        });
+    });
+    const projects = [];
+    document.querySelectorAll('[id^="project_"]').forEach(el => {
+        const id = el.id.split('_')[1];
+        const name = document.getElementById(`proj_name_${id}`);
+        if (name?.value) projects.push({
+            name: name.value,
+            type: document.getElementById(`proj_type_${id}`).value,
+            role: document.getElementById(`proj_role_${id}`).value,
+            year: parseInt(document.getElementById(`proj_year_${id}`).value) || 2024,
+            team_size: parseInt(document.getElementById(`proj_team_${id}`).value) || 1,
+            description: document.getElementById(`proj_desc_${id}`).value || '',
+        });
+    });
+    const langStr = document.getElementById('languages').value;
+    const languages = langStr ? langStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const payload = {
+        name: document.getElementById('name').value.trim(),
+        age: parseInt(document.getElementById('age').value) || null,
+        telegram_id: parseInt(document.getElementById('telegram_id').value) || null,
+        telegram_username: document.getElementById('telegram_username').value || '',
+        city: document.getElementById('city').value,
+        region: document.getElementById('region').value,
+        school_type: document.getElementById('school_type').value,
+        languages,
+        gpa: parseFloat(document.getElementById('gpa').value) || null,
+        ielts_score: document.getElementById('ielts_score').value || '',
+        ent_score: document.getElementById('ent_score').value || '',
+        olympiads, courses, projects,
+        essay: document.getElementById('essayText').value || '',
+        scenario_choices: slpiState.choices,
+    };
+    try {
+        await api('/api/applications/', { method:'POST', body:JSON.stringify(payload) });
+        showToast('🎉 Заявка успешно отправлена!', 'success');
+        setTimeout(() => window.location = '/', 1800);
+    } catch(e) {
+        showToast(e.message, 'error');
+        btn.disabled = false; btn.textContent = '📨 Отправить заявку →';
+    }
+}
+</script>
+{% endblock %}
