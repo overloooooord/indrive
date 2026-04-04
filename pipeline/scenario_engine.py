@@ -165,6 +165,24 @@ def compute_fingerprint(
     choice_path: list[str],
     timer_compliant: Optional[list[bool]] = None,
 ) -> dict:
+    """
+    Главная функция модуля. Вызывается из scorer.py и feature_extractor.py.
+
+    Параметры
+    ----------
+    choice_path     : список из 10 строк (A/B/C/D/timeout)
+    timer_compliant : список из 10 bool (True = ответил вовремя).
+                      Если None — считаем все шаги compliant.
+
+    Возвращает
+    ----------
+    {
+        "fingerprint_vector":   list[float],  # 500 значений → в XGBoost
+        "fingerprint_display":  dict,          # 5 SLPI-кластеров → в дашборд + SHAP
+        "fingerprint_reliable": bool,          # False если > 3 timeout
+        "timeout_steps":        list[int],     # индексы шагов с истёкшим таймером
+    }
+    """
     if timer_compliant is None:
         timer_compliant = [True] * len(choice_path)
     cleaned_path = [
@@ -172,7 +190,9 @@ def compute_fingerprint(
         for ch, compliant in zip(choice_path, timer_compliant)
     ]
     timeout_steps = [i for i, c in enumerate(timer_compliant) if not c]
-    fingerprint_reliable = len(timeout_steps) <= 2
+    # Надёжность: если > 3 из 10 шагов — timeout, fingerprint ненадёжен
+    fingerprint_reliable = len(timeout_steps) <= 3
+
     if not fingerprint_reliable:
         return {
             "fingerprint_vector":   None,
