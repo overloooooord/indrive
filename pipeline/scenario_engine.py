@@ -313,7 +313,7 @@ def compute_fingerprint(
     {
         "fingerprint_vector":   list[float],  # 500 значений → в XGBoost
         "fingerprint_display":  dict,          # 5 SLPI-кластеров → в дашборд + SHAP
-        "fingerprint_reliable": bool,          # False если > 2 timeout
+        "fingerprint_reliable": bool,          # False если > 3 timeout
         "timeout_steps":        list[int],     # индексы шагов с истёкшим таймером
     }
     """
@@ -327,8 +327,8 @@ def compute_fingerprint(
     ]
 
     timeout_steps = [i for i, c in enumerate(timer_compliant) if not c]
-    # Надёжность: если > 2 из 10 шагов — timeout, fingerprint ненадёжен
-    fingerprint_reliable = len(timeout_steps) <= 2
+    # Надёжность: если > 3 из 10 шагов — timeout, fingerprint ненадёжен
+    fingerprint_reliable = len(timeout_steps) <= 3
 
     if not fingerprint_reliable:
         # Возвращаем None-значения — scorer.py исключит fp-компоненты из модели
