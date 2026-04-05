@@ -30,13 +30,16 @@ def extract_essay_features(candidate: Dict[str, Any]) -> np.ndarray:
     nlp = candidate.get("bot_metadata", {}).get("essay_nlp")
     if nlp is None:
         return np.zeros(6, dtype=np.float32)
+    # NLP result may be nested {"scores": {...}} or flat {"model_the_way": ...}
+    if "scores" in nlp:
+        nlp = nlp["scores"]
     return np.array([
-        nlp["model_the_way"]         / 10.0,
-        nlp["inspire_shared_vision"] / 10.0,
-        nlp["challenge_the_process"] / 10.0,
-        nlp["enable_others_to_act"]  / 10.0,
-        nlp["encourage_the_heart"]   / 10.0,
-        nlp["overall"]               / 10.0,
+        nlp.get("model_the_way", 0)         / 10.0,
+        nlp.get("inspire_shared_vision", 0) / 10.0,
+        nlp.get("challenge_the_process", 0) / 10.0,
+        nlp.get("enable_others_to_act", 0)  / 10.0,
+        nlp.get("encourage_the_heart", 0)   / 10.0,
+        nlp.get("overall", 0)               / 10.0,
     ], dtype=np.float32)
 def extract_batch(candidates: List[Dict[str, Any]]) -> np.ndarray:
     return np.array([extract_features(c) for c in candidates], dtype=np.float32)

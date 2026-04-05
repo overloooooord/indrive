@@ -110,7 +110,9 @@ class CandidateScorer:
         }
     def _build_flags(self, f: Dict[str, float], essay_nlp: Optional[dict] = None) -> Dict[str, Any]:
         if essay_nlp is not None:
-            overall = essay_nlp["scores"]["overall"]
+            # Handle both nested {"scores": {"overall": ...}} and flat {"overall": ...}
+            scores = essay_nlp.get("scores", essay_nlp) if isinstance(essay_nlp, dict) else {}
+            overall = scores.get("overall", 5.0)
             if overall >= 6.5:
                 coherence_status, coherence_detail = "ok", f"Высокая когерентность эссе (overall {overall}/10)"
             elif overall >= 4.0:
@@ -399,7 +401,9 @@ class ThreeStageScorer:
         }
     def _build_flags(self, f: Dict[str, float], essay_nlp: Optional[dict] = None) -> Dict[str, Any]:
         if essay_nlp is not None:
-            overall = essay_nlp["scores"]["overall"]
+            # Handle both nested {"scores": {"overall": ...}} and flat {"overall": ...}
+            scores = essay_nlp.get("scores", essay_nlp) if isinstance(essay_nlp, dict) else {}
+            overall = scores.get("overall", 5.0)
             if overall >= 6.5:
                 coherence_status, coherence_detail = "ok", f"Высокая когерентность эссе (overall {overall}/10)"
             elif overall >= 4.0:
