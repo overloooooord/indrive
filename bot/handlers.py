@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
 from datetime import datetime
 from keyboards import kb_school
-from helpers import save_to_json
+from helpers import build_candidate_json
 
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart, Command
@@ -1519,10 +1519,11 @@ async def finalize_application(message: Message, state: FSMContext, user_id: int
     app = await get_application(user_id)
     if app:
         try:
-            path = save_to_json(app)
-            logger.info(f"JSON saved for user {user_id}: {path}")
+            candidate_json = build_candidate_json(app)
+            await update_application(user_id, candidate_json=candidate_json)
+            logger.info(f"Candidate JSON saved to DB for user {user_id}")
         except Exception as e:
-            logger.error(f"Error saving JSON: {e}")
+            logger.error(f"Error saving candidate JSON to DB: {e}")
 
     summary = build_summary(app)
     await message.answer(

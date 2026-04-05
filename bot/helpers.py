@@ -1,6 +1,5 @@
 import re
 import json
-import os
 from datetime import datetime
 from config import ESSAY_MIN_WORDS, ESSAY_MAX_WORDS
 
@@ -152,11 +151,8 @@ def build_summary(app) -> str:
     return "\n".join(lines)
 
 
-def save_to_json(app_data):
-    if not os.path.exists('model_inputs'):
-        os.makedirs('model_inputs')
-
-    result = {
+def build_candidate_json(app_data) -> dict:
+    return {
         "user_id": app_data.telegram_id,
         "username": app_data.telegram_username,
         "personal": {
@@ -191,10 +187,3 @@ def save_to_json(app_data):
         "scenario_results": app_data.scenario_choices,
         "submitted_at": datetime.utcnow().isoformat(),
     }
-
-    file_path = f"model_inputs/user_{app_data.telegram_id}.json"
-
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=4)
-
-    return file_path

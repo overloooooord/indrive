@@ -70,6 +70,9 @@ class Application(Base):
     # files
     uploaded_files: Mapped[dict | None] = mapped_column(JSON, default=list)
 
+    # full candidate JSON snapshot for ML pipeline (replaces ephemeral file)
+    candidate_json: Mapped[dict | None] = mapped_column(JSON)
+
     # pipeline scoring results (written back by the ML pipeline)
     score_prediction:    Mapped[str | None]   = mapped_column(String(20))
     score_confidence:    Mapped[float | None] = mapped_column(Float)
