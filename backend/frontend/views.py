@@ -51,12 +51,14 @@ def panel_login(request):
     teachers = getattr(settings, 'TEACHERS', {})
     if username in teachers:
         teacher = teachers[username]
-        teacher_password = teacher.get('password', '')
+        # Поддерживаем оба ключа: 'password' и 'password_hash' (документация ранее указывала 'password_hash')
+        teacher_password = teacher.get('password', '') or teacher.get('password_hash', '')
         if teacher_password and password == teacher_password:
             request.session['teacher_auth'] = username
             request.session['teacher_name'] = teacher.get('name', username)
             logger.info(f"Вход в кабинет учителя: {username} ({teacher.get('name', '')})")
             return JsonResponse({'success': True, 'redirect': '/teacher/'})
+        logger.warning(f"Неудачная попытка входа учителя: username={username} (пароль не совпал)")
     logger.warning(f"Неудачная попытка входа: username={username}")
     return JsonResponse(
         {'success': False, 'error': 'Неверный логин или пароль'},
