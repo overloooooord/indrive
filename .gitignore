@@ -1,5 +1,6 @@
 .env
 venv
+*.sqlite3
 __pycache__
 model_inputs
 # pipeline/models/*.pkl
