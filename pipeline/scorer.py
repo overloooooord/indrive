@@ -3,9 +3,6 @@ import os
 import pickle
 import numpy as np
 from typing import Dict, Any, Optional
-import sys as _sys, os as _os
-_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-from summarizer import generate_candidate_summary
 from config import (
     LABEL_NAMES, MODEL_PATH, FEATURE_DESCRIPTIONS,
     STAGE_WEIGHTS, THREE_STAGE_MODEL_PATH, XGBOOST_PARAMS,
@@ -17,6 +14,41 @@ from feature_extractor import (
 )
 from trainer import load_model
 from explainer import CandidateExplainer
+def _generate_candidate_summary(score_result: dict) -> str:
+    """Детерминированное текстовое резюме по результату скоринга. Без внешних API."""
+    prediction = score_result.get("prediction", "")
+    confidence = score_result.get("confidence", 0.0)
+    positives  = score_result.get("explanation", {}).get("top_positive_factors", [])
+    negatives  = score_result.get("explanation", {}).get("top_negative_factors", [])
+    flags      = score_result.get("flags", {})
+
+    verdict_map = {
+        "shortlist": "Профиль соответствует критериям программы",
+        "maybe":     "Профиль требует дополнительного рассмотрения",
+        "reject":    "Профиль не соответствует критериям на данном этапе",
+    }
+    base = verdict_map.get(prediction, "Оценка недоступна")
+    conf_phrase = "высокая" if confidence > 0.75 else "средняя" if confidence > 0.5 else "низкая"
+
+    parts = [f"{base} (уверенность модели — {conf_phrase}, {confidence:.0%})."]
+
+    if positives:
+        strong = positives[0]["description"].lower()
+        if len(positives) > 1:
+            strong += f" и {positives[1]['description'].lower()}"
+        parts.append(f"Сильные стороны: {strong}.")
+
+    if negatives:
+        parts.append(f"Обратить внимание: {negatives[0]['description'].lower()}.")
+
+    if flags.get("strong_trajectory"):
+        parts.append("Комиссии рекомендуется обратить внимание на траекторию роста.")
+    elif prediction == "maybe":
+        parts.append("Рекомендуется уточнить детали на интервью.")
+
+    return " ".join(parts)
+
+
 class CandidateScorer:
     def __init__(self, model_path: str = None, X_background: np.ndarray = None):
         self.model     = load_model(model_path or MODEL_PATH)
@@ -81,7 +113,7 @@ class CandidateScorer:
                 for k, v in feature_dict.items()
             },
         }
-        result["ai_summary"] = generate_candidate_summary(result)
+        result["ai_summary"] = _generate_candidate_summary(result)
         return result
     def score_batch(self, candidates: list) -> list:
         return [self.score(c) for c in candidates]
@@ -344,7 +376,7 @@ class ThreeStageScorer:
                 for k, v in feature_dict.items()
             },
         }
-        result["ai_summary"] = generate_candidate_summary(result)
+        result["ai_summary"] = _generate_candidate_summary(result)
         return result
     def score_batch(self, candidates: list) -> list:
         return [self.score(c) for c in candidates]
