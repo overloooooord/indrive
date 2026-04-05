@@ -12,7 +12,7 @@ engine = create_async_engine(
     DATABASE_URL,
     echo=False,
     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False),
-    # connect_args={"ssl": "require"},
+    connect_args={"ssl": "require"},
 )
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
