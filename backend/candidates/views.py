@@ -315,7 +315,16 @@ def admin_applications(request):
         return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
 
     search = request.query_params.get('search', '')
+    funnel = request.query_params.get('funnel_stage', '')
+    scored = request.query_params.get('scored', '')
 
+    try:
+        results = _load_from_bot_db(search, funnel, scored)
+        return Response({'count': len(results), 'results': results, 'source': 'bot_db'})
+    except Exception as e:
+        logger.error(f"Ошибка bot_db: {e}")
+
+    # Fallback if bot_db fails or not configured
     try:
         results = _load_from_local_db(search)
         return Response({'count': len(results), 'results': results, 'source': 'local'})
