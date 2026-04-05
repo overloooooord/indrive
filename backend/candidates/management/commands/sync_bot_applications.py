@@ -25,20 +25,9 @@ class Command(BaseCommand):
         if dry:
             self.stdout.write(self.style.WARNING("=== DRY RUN — без сохранения ===\n"))
 
-        try:
-            bot_apps = list(BotApplication.objects.all())
-            total = len(bot_apps)
-        except Exception as e:
-            self.stderr.write(
-                self.style.ERROR(
-                    f"❌ Не удалось подключиться к Supabase: {e}\n"
-                    "Убедитесь что DATABASE_URL задан в backend/.env"
-                )
-            )
-            return
-
-        total = bot_apps.count()
-        self.stdout.write(f"Найдено заявок в Supabase: {total}")
+        bot_apps = list(BotApplication.objects.all())
+        total = len(bot_apps)
+        self.stdout.write(f"Найдено заявок в боте: {total}")
 
         created = updated = skipped = 0
 
