@@ -14,3 +14,4 @@ scipy>=1.11.0
 shap>=0.43.0
 
 # NLP (essay analysis) — lightweight TF-IDF via scikit-learn (no torch/transformers)
+deep-translator>=1.11.0
