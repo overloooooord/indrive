@@ -17,14 +17,8 @@ COPY front/ ./front/
 # NLP package (essay analysis, shared with bot)
 COPY bot/nlp/ ./backend/nlp/
 
-# Pre-download ONNX model into image so first request isn't slow
+# NLP model will be lazy-loaded at first request (no HuggingFace auth needed at build)
 ENV MODEL_CACHE_DIR=/app/nlp_model_cache
-RUN python -c "\
-import os; os.makedirs('/app/nlp_model_cache', exist_ok=True); \
-import sys; sys.path.insert(0, '/app/backend'); \
-from nlp.nlp_model import _load_model; \
-_load_model(); \
-print('NLP model cached successfully')"
 
 WORKDIR /app/backend
 

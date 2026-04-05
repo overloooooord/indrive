@@ -247,6 +247,9 @@ class BotApplication(models.Model):
     # files
     uploaded_files = models.JSONField(null=True, default=list)
 
+    # full candidate JSON snapshot for ML pipeline
+    candidate_json = models.JSONField(null=True, blank=True)
+
     # pipeline scoring results
     score_prediction = models.CharField(max_length=20, null=True, blank=True)
     score_confidence = models.FloatField(null=True)
@@ -291,6 +294,8 @@ class BotApplication(models.Model):
             },
             'education': {
                 'gpa': self.gpa or 0.0,
+                'ielts_score': self.ielts_score,
+                'ent_score': self.ent_score,
                 'olympiads': olympiads,
                 'courses': courses,
             },
@@ -310,7 +315,7 @@ class BotApplication(models.Model):
                 'fingerprint_reliable': bool(self.fingerprint_reliable),
                 'scenario_choices': self.scenario_choices or {},
                 'timer_violations': self.timer_violations or 0,
-                'essay_nlp': self.essay_nlp or {},
+                'essay_nlp': self.essay_nlp if self.essay_nlp else None,
             },
         }
 
