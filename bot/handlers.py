@@ -1410,6 +1410,11 @@ async def finish_scenarios(bot: Bot, user_id: int, state: FSMContext):
     timer_compliant = [ch != "T" for ch in choice_path]
 
     fp_result = compute_fingerprint(choice_path, timer_compliant=timer_compliant)
+    # Override reliability with the actual event-based violation count (violations
+    # counts timeout events, not individual T-entries; 2 entry timeouts → 4 T-entries
+    # but only 2 events — we allow up to 3 events before marking unreliable).
+    if fp_result["fingerprint_reliable"] is not None:
+        fp_result["fingerprint_reliable"] = violations <= 3
 
     await update_application(
         user_id,

@@ -1,6 +1,7 @@
 [build]
-builder = "nixpacks"
+dockerfilePath = "backend/Dockerfile"
+watchPatterns = ["backend/**", "pipeline/**", "data/**", "front/**"]
 
 [deploy]
-startCommand = "cd backend && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn invision.wsgi --bind 0.0.0.0:$PORT"
-healthcheckPath = "/"
+healthcheckPath = "/panel/login/"
+restartPolicyType = "on_failure"

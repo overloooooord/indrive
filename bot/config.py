@@ -15,10 +15,16 @@ if not raw_port or raw_port.lower() == "none":
 else:
     DB_PORT = raw_port
 
-DATABASE_URL = (
-    os.getenv("DATABASE_URL")
-    or f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+def _build_database_url():
+    url = os.getenv("DATABASE_URL")
+    if url:
+        # Railway gives postgresql:// or postgres:// — asyncpg needs postgresql+asyncpg://
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+    return f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+DATABASE_URL = _build_database_url()
 
 MAX_OLYMPIADS = 10
 MAX_COURSES = 10

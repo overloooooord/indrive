@@ -151,6 +151,13 @@ class Application(models.Model):
 
     # ── Эссе ──
     essay = models.TextField('Эссе', blank=True, default='')
+    essay_nlp = models.JSONField('NLP-анализ эссе', null=True, blank=True)
+
+    # ── Сценарии / SLPI ──
+    scenario_choices = models.JSONField('Выборы сценариев', default=dict, blank=True)
+    fingerprint_display = models.JSONField('SLPI профиль', null=True, blank=True)
+    fingerprint_reliable = models.BooleanField('Fingerprint надёжен', null=True, blank=True)
+    timer_violations = models.IntegerField('Нарушения таймера', default=0)
 
     # ── ML scoring ──
     scoring_result = models.JSONField(
