@@ -120,11 +120,13 @@ def application_list_create(request):
         # Essay NLP (тяжело — в фоне, не блокирует ответ)
         _compute_and_save_essay_nlp(application)
 
-        # Telegram уведомление
-        try:
-            notify_new_application(application)
-        except Exception as e:
-            logger.error(f"Ошибка Telegram: {e}")
+        # Telegram уведомление (в фоне, не блокирует ответ)
+        def _notify():
+            try:
+                notify_new_application(application)
+            except Exception as e:
+                logger.error(f"Ошибка Telegram: {e}")
+        threading.Thread(target=_notify, daemon=True).start()
 
         return Response(
             ApplicationSerializer(application).data,
