@@ -445,15 +445,15 @@
                             const pct = (val / 10 * 100).toFixed(0);
                             const color = val >= 6.5 ? '#22c55e' : val >= 4.0 ? '#f59e0b' : '#ef4444';
                             const isOverall = key === 'overall';
-                            return \`<div style="margin-bottom:\${isOverall ? '0' : '6'}px;\${isOverall ? 'margin-top:8px;padding-top:8px;border-top:1px solid var(--border);' : ''}">
+                            return `<div style="margin-bottom:${isOverall ? '0' : '6'}px;${isOverall ? 'margin-top:8px;padding-top:8px;border-top:1px solid var(--border);' : ''}">
                             <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:2px;">
-                                <span style="color:var(--text-secondary);\${isOverall ? 'font-weight:700;' : ''}">\${label}</span>
-                                <span style="font-weight:700;color:\${color};">\${val.toFixed(1)}/10</span>
+                                <span style="color:var(--text-secondary);${isOverall ? 'font-weight:700;' : ''}">${label}</span>
+                                <span style="font-weight:700;color:${color};">${val.toFixed(1)}/10</span>
                             </div>
-                            <div style="height:\${isOverall ? '8' : '5'}px;background:var(--bg-input);border-radius:3px;">
-                                <div style="height:100%;width:\${pct}%;border-radius:3px;background:\${color};transition:width 0.5s;"></div>
+                            <div style="height:${isOverall ? '8' : '5'}px;background:var(--bg-input);border-radius:3px;">
+                                <div style="height:100%;width:${pct}%;border-radius:3px;background:${color};transition:width 0.5s;"></div>
                             </div>
-                        </div>\`;
+                        </div>`;
                     }).join('');
                 })()}
             </div>` : '<div style="margin-top:8px;font-size:0.78rem;color:var(--text-muted);">⏳ NLP анализ ещё не выполнен</div>'
