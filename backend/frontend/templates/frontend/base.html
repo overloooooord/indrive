@@ -22,9 +22,12 @@
         </a>
         <div class="navbar-links">
             <a href="/" id="nav-main">Главная</a>
-            {% if request.session.role %}
-                <span class="nav-username" style="color:var(--text-secondary);font-size:0.88rem;font-weight:600;">{% if request.session.role == 'admin' %}admin{% else %}{{ request.session.role }}{% endif %}</span>
-                <a href="/panel/logout/" id="nav-logout" style="color:#ef4444;margin-right:10px;">Выйти</a>
+            {% if request.session.panel_auth %}
+                <span style="color:var(--text-secondary);font-size:0.88rem;font-weight:600;">👑 admin</span>
+                <a href="/panel/logout/" style="color:#ef4444;margin-left:8px;font-size:0.88rem;" title="Выйти">Выйти</a>
+            {% elif request.session.teacher_auth %}
+                <span style="color:var(--text-secondary);font-size:0.88rem;font-weight:600;">👩‍🏫 {{ request.session.teacher_name }}</span>
+                <a href="/teacher/logout/" style="color:#ef4444;margin-left:8px;font-size:0.88rem;" title="Выйти">Выйти</a>
             {% else %}
                 <a href="/panel/" id="nav-panel">Войти</a>
             {% endif %}
