@@ -339,8 +339,8 @@ def admin_login(request):
 
 @api_view(['GET'])
 def admin_applications(request):
-    if not request.session.get('panel_auth'):
-        return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
+    # if not request.session.get('panel_auth'):
+    #     return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
 
     search = request.query_params.get('search', '')
     funnel = request.query_params.get('funnel_stage', '')
