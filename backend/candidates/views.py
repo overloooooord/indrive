@@ -350,19 +350,33 @@ def admin_applications(request):
     scored = request.query_params.get('scored', '')
 
     results = []
-    try:
-        results.extend(_load_from_bot_db(search, funnel, scored))
-    except Exception as e:
-        logger.error(f"Ошибка bot_db: {e}")
+    bot_error = None
+    local_error = None
 
-    # Always also load web submissions from candidates_application (migration period)
     try:
-        results.extend(_load_from_local_db(search))
+        logger.info("admin_applications: querying BotApplication...")
+        bot_results = _load_from_bot_db(search, funnel, scored)
+        logger.info(f"admin_applications: got {len(bot_results)} from bot_db")
+        results.extend(bot_results)
     except Exception as e:
-        logger.error(f"Ошибка local DB: {e}")
+        bot_error = str(e)
+        logger.error(f"Ошибка bot_db: {e}", exc_info=True)
 
-    if not results:
-        return Response({'error': 'Нет данных'}, status=500)
+    try:
+        logger.info("admin_applications: querying local Application...")
+        local_results = _load_from_local_db(search)
+        logger.info(f"admin_applications: got {len(local_results)} from local")
+        results.extend(local_results)
+    except Exception as e:
+        local_error = str(e)
+        logger.error(f"Ошибка local DB: {e}", exc_info=True)
+
+    if not results and (bot_error or local_error):
+        return Response({
+            'error': 'Ошибка загрузки данных',
+            'bot_error': bot_error,
+            'local_error': local_error,
+        }, status=500)
 
     results.sort(key=lambda x: x.get('updated_at') or '', reverse=True)
     return Response({'count': len(results), 'results': results, 'source': 'merged'})
