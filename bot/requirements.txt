@@ -13,8 +13,4 @@ numpy>=1.24.0
 scipy>=1.11.0
 shap>=0.43.0
 
-# NLP (essay analysis)
-transformers>=4.35.0
-torch>=2.0.0
-sentencepiece
-deep-translator>=1.11.0
+# NLP (essay analysis) — lightweight TF-IDF via scikit-learn (no torch/transformers)

@@ -20,27 +20,23 @@ def extract_structural_features(candidate: Dict[str, Any]) -> np.ndarray:
 def extract_slpi_features(candidate: Dict[str, Any]) -> np.ndarray:
     meta = candidate.get("bot_metadata", {})
     if not meta.get("fingerprint_reliable", False):
-        # Default fallback to neutral/average synthetic values avoiding extreme 0.0 penalties
-        return np.full(len(SLPI_FEATURES), 0.5, dtype=np.float32)
+        return np.zeros(len(SLPI_FEATURES), dtype=np.float32)
     display = meta.get("fingerprint_display", {})
     return np.array(
-        [float(display.get(k, 0.5)) for k in SLPI_FEATURES],
+        [float(display.get(k, 0.0)) for k in SLPI_FEATURES],
         dtype=np.float32,
     )
-
 def extract_essay_features(candidate: Dict[str, Any]) -> np.ndarray:
     nlp = candidate.get("bot_metadata", {}).get("essay_nlp")
     if nlp is None:
-        # Default fallback to median synthetic dataset performance
-        return np.full(6, 0.55, dtype=np.float32)
-    scores = nlp.get("scores", nlp)
+        return np.zeros(6, dtype=np.float32)
     return np.array([
-        scores.get("model_the_way", 5.5)         / 10.0,
-        scores.get("inspire_shared_vision", 5.5) / 10.0,
-        scores.get("challenge_the_process", 5.5) / 10.0,
-        scores.get("enable_others_to_act", 5.5)  / 10.0,
-        scores.get("encourage_the_heart", 5.5)   / 10.0,
-        scores.get("overall", 5.5)               / 10.0,
+        nlp["model_the_way"]         / 10.0,
+        nlp["inspire_shared_vision"] / 10.0,
+        nlp["challenge_the_process"] / 10.0,
+        nlp["enable_others_to_act"]  / 10.0,
+        nlp["encourage_the_heart"]   / 10.0,
+        nlp["overall"]               / 10.0,
     ], dtype=np.float32)
 def extract_batch(candidates: List[Dict[str, Any]]) -> np.ndarray:
     return np.array([extract_features(c) for c in candidates], dtype=np.float32)
@@ -72,19 +68,12 @@ def _build_feature_dict(candidate: dict) -> Dict[str, float]:
         "f_failure_acknowledgment_ratio": _f_failure_acknowledgment_ratio(projects),
     }
 def _f_gpa(edu: dict) -> float:
-    score = edu.get("gpa")
-    if not score:
-        score = 3.5
-    return float(np.clip(score, 0.0, 5.0))
+    return float(np.clip(edu.get("gpa", 0.0), 0.0, 5.0))
 def _f_ent_score(edu: dict) -> float:
-    score = edu.get("ent_score")
-    if not score:
-        score = 80.0
+    score = edu.get("ent_score") or 0
     return float(np.clip(score, 0, 140) / 140)
 def _f_ielts_score(edu: dict) -> float:
-    score = edu.get("ielts_score")
-    if not score:
-        score = 5.0
+    score = edu.get("ielts_score") or 0
     return float(np.clip(score, 0, 9) / 9)
 def _f_olympiad_max_level(olympiads: list) -> float:
     if not olympiads:

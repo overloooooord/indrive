@@ -133,6 +133,5 @@ def main():
     print("\n" + "█" * 60)
     print("  PIPELINE COMPLETE")
     print("█" * 60)
-    print()
 if __name__ == "__main__":
     main()
