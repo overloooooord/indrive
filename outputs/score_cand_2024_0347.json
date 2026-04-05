@@ -1,0 +1,143 @@
+{
+  "candidate_id": "cand_2024_0347",
+  "prediction": "shortlist",
+  "confidence": 0.8438515663146973,
+  "probabilities": {
+    "reject": 0.007975532673299313,
+    "maybe": 0.14817282557487488,
+    "shortlist": 0.8438515663146973
+  },
+  "explanation": {
+    "top_positive_factors": [
+      {
+        "description": "Доля проектов как основатель",
+        "value": 1.0,
+        "impact": 1.7239
+      },
+      {
+        "description": "Максимальная роль в проектах",
+        "value": 3.0,
+        "impact": 0.4949
+      },
+      {
+        "description": "Макс. размер команды (до 500)",
+        "value": 2.0,
+        "impact": 0.2449
+      },
+      {
+        "description": "Разнообразие типов проектов",
+        "value": 3.0,
+        "impact": 0.0871
+      },
+      {
+        "description": "Количество олимпиад",
+        "value": 2.0,
+        "impact": 0.0432
+      }
+    ],
+    "top_negative_factors": [
+      {
+        "description": "Период активности (лет)",
+        "value": 1.0,
+        "impact": -0.3777
+      },
+      {
+        "description": "Рост масштаба деятельности",
+        "value": 0.2924812436103821,
+        "impact": -0.1091
+      },
+      {
+        "description": "Доля завершённых курсов",
+        "value": 0.0,
+        "impact": -0.1087
+      },
+      {
+        "description": "Средний балл (GPA)",
+        "value": 4.199999809265137,
+        "impact": -0.0988
+      },
+      {
+        "description": "Максимальный уровень олимпиады",
+        "value": 2.0,
+        "impact": -0.0947
+      }
+    ]
+  },
+  "radar": {
+    "model_the_way": null,
+    "inspire_vision": null,
+    "challenge_process": null,
+    "enable_others": null,
+    "encourage_heart": null,
+    "status": "pending — scenario_engine.py not yet deployed"
+  },
+  "flags": {
+    "coherence": {
+      "status": "pending",
+      "label": "Когерентность профиля",
+      "detail": "Будет рассчитано NLP-модулем"
+    },
+    "ai_detection": {
+      "status": "pending",
+      "label": "AI-детекция эссе",
+      "detail": "Будет рассчитано AI-детектором"
+    }
+  },
+  "trajectory": [
+    {
+      "year": 2023,
+      "type": "project",
+      "title": "Экологический Instagram про Актау",
+      "role": "founder",
+      "category": "media"
+    },
+    {
+      "year": 2023,
+      "type": "olympiad",
+      "title": "Олимпиада: биология",
+      "level": "city",
+      "prize": false
+    },
+    {
+      "year": 2024,
+      "type": "project",
+      "title": "Уборка побережья Каспия",
+      "role": "founder",
+      "category": "social"
+    },
+    {
+      "year": 2024,
+      "type": "project",
+      "title": "Сайт школьной библиотеки",
+      "role": "founder",
+      "category": "technical"
+    },
+    {
+      "year": 2024,
+      "type": "olympiad",
+      "title": "Олимпиада: биология",
+      "level": "regional",
+      "prize": false
+    }
+  ],
+  "feature_values": {
+    "Средний балл (GPA)": 4.2,
+    "Количество олимпиад": 2,
+    "Максимальный уровень олимпиады": 2,
+    "Наличие призового места": 1,
+    "Количество онлайн-курсов": 1,
+    "Проходил(а) хоть один курс": 1,
+    "Доля завершённых курсов": 0.0,
+    "Количество проектов": 3,
+    "Доля проектов как основатель": 1.0,
+    "Максимальная роль в проектах": 3,
+    "Разнообразие типов проектов": 3,
+    "Макс. размер команды (до 500)": 2,
+    "Рост ролей (участник → лидер)": 0.0,
+    "Рост масштаба деятельности": 0.2925,
+    "Рост разнообразия навыков": 3,
+    "Период активности (лет)": 1,
+    "Упорство (продолжил после неудачи)": 0,
+    "Доля проектов с признанием трудностей": 0.0
+  }
+}

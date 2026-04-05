@@ -2,5 +2,6 @@
 dockerfilePath = "backend/Dockerfile"
 
 [deploy]
+healthcheckPath = "/panel/login/"
 restartPolicyType = "on_failure"
 startCommand = ""
