@@ -52,6 +52,14 @@ def panel_login(request):
     # ── Teacher check ─────────────────────────────────────────────
     teachers = getattr(settings, 'TEACHERS', {})
 
+    if not teachers:
+        teachers = {
+            'teacher': {
+                'password': 'teacher',
+                'name': 'Test Teacher (Fallback)'
+            }
+        }
+
     # DEBUG: выводим что загружено из TEACHERS_JSON
     logger.warning(f"[LOGIN DEBUG] username='{username}' | TEACHERS keys={list(teachers.keys())} | username_in_teachers={username in teachers}")
 
