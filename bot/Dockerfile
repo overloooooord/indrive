@@ -8,7 +8,8 @@ COPY bot/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY bot/ ./bot/
-COPY pipeline/ ./pipeline/
+COPY pipeline/nlp/ ./pipeline/nlp/
+COPY pipeline/__init__.py ./pipeline/__init__.py
 
 WORKDIR /app/bot
 
