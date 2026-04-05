@@ -323,16 +323,16 @@
         // --- Build SLPI section ---
         const slpiHtml = radar_vals.map(k => {
             const val = fp[k] !== undefined ? fp[k] : (radar[k] || null);
-            // val is typically 0.01-0.05. val * 100 is the raw sum (1-5 points out of ~10). 
-            // We multiply by 10 to convert raw points to percentage (e.g. 2.1 -> 21%)
-            const pct = val !== null ? Math.min(100, Math.round(val * 100 * 10)) : null;
+            // val is typically 0.01-0.05. val * 100 is the raw sum (e.g. 2.1 points out of ~10). 
+            const rawScore = val !== null ? Math.min(10, val * 100).toFixed(1) : null;
+            const pct = rawScore !== null ? Math.round(rawScore * 10) : 0;
             return `<div style="margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px;">
                 <span style="color:var(--text-secondary);">${SLPI_LABELS[k] || k}</span>
-                <span style="font-weight:700;">${pct !== null ? pct + '%' : '—'}</span>
+                <span style="font-weight:700;">${rawScore !== null ? rawScore + '/10' : '—'}</span>
             </div>
             <div style="height:6px;background:var(--bg-input);border-radius:3px;">
-                <div style="height:100%;width:${pct || 0}%;border-radius:3px;background:var(--accent);transition:width 0.5s;"></div>
+                <div style="height:100%;width:${pct}%;border-radius:3px;background:var(--accent);transition:width 0.5s;"></div>
             </div>
         </div>`;
         }).join('');
