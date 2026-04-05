@@ -15,3 +15,5 @@ shap>=0.43.0
 
 # NLP (essay analysis) — lightweight TF-IDF via scikit-learn (no torch/transformers)
 deep-translator>=1.11.0
+onnxruntime>=1.17.0
+optimum[onnxruntime]>=1.16.0
