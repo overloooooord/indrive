@@ -68,9 +68,8 @@ USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    PROJECT_ROOT / 'front',
-]
+_front_dir = PROJECT_ROOT / 'front'
+STATICFILES_DIRS = [_front_dir] if _front_dir.exists() else []
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
@@ -91,8 +90,6 @@ TEACHERS = {
         'password_hash': '$2b$12$HsFMXLbNtRMUp2Nb80ux3ujTn5spiDW3FSN14OGpk2eDZPbDhO/jq',
     }
 }
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
-os.makedirs(LOG_DIR, exist_ok=True)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -101,49 +98,26 @@ LOGGING = {
             'format': '[{asctime}] {levelname} {name} — {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file_app': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'app.log'),
             'formatter': 'verbose',
-            'encoding': 'utf-8',
-        },
-        'file_errors': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'errors.log'),
-            'formatter': 'verbose',
-            'level': 'ERROR',
-            'encoding': 'utf-8',
-        },
-        'file_applications': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'applications.log'),
-            'formatter': 'verbose',
-            'encoding': 'utf-8',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file_errors'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': True,
         },
         'candidates': {
-            'handlers': ['console', 'file_app', 'file_errors'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'candidates.applications': {
-            'handlers': ['console', 'file_applications'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },

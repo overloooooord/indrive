@@ -8,7 +8,7 @@ def validate_name(text: str) -> bool:
     """2–60 chars, only letters (cyrillic/latin) and spaces"""
     if not (2 <= len(text.strip()) <= 60):
         return False
-    return bool(re.match(r"^[a-zA-Zа-яА-ЯёЁ\s\-]+$", text.strip()))
+    return bool(re.match(r"^[a-zA-Zа-яА-ЯёЁәӘіІңҢғҒүҮұҰқҚөӨһҺ\s\-]+$", text.strip()))
 
 
 def validate_age(text: str) -> int | None:
@@ -68,45 +68,48 @@ def extract_gpa(raw: str) -> float | None:
     except ValueError:
         return None
     return None
+# ---------------------------------------------------------------------------------------------------------------------
+# БОТОВСКИЙ СЧЕТЧИК FINGERPRINT
+# ---------------------------------------------------------------------------------------------------------------------
+# SLPI_MAPPING = {
+#     # step1 → Challenge the Process / Enable Others
+#     "sc1_A": {"challenge_process": 0.3, "model_the_way": 0.7},
+#     "sc1_B": {"enable_others": 0.8, "inspire_vision": 0.5},
+#     "sc1_C": {"challenge_process": 0.6, "model_the_way": 0.4},
+#     "sc1_D": {"model_the_way": 0.5, "encourage_heart": 0.3},
+#     # step2 → Enable Others / Encourage the Heart
+#     "sc2_A": {"encourage_heart": 0.8, "enable_others": 0.3},
+#     "sc2_B": {"model_the_way": 0.7, "challenge_process": 0.3},
+#     "sc2_C": {"encourage_heart": 0.6, "enable_others": 0.6},
+#     "sc2_D": {"enable_others": 0.5, "model_the_way": 0.4},
+#     # step3 → Challenge the Process
+#     "sc3_A": {"model_the_way": 0.6},
+#     "sc3_B": {"challenge_process": 0.8, "inspire_vision": 0.5},
+#     "sc3_C": {"challenge_process": 0.7, "model_the_way": 0.4},
+#     "sc3_D": {"model_the_way": 0.4, "challenge_process": 0.2},
+#     # step4 → Enable Others / Model the Way
+#     "sc4_A": {"model_the_way": 0.8, "challenge_process": 0.3},
+#     "sc4_B": {"enable_others": 0.8, "inspire_vision": 0.5},
+#     "sc4_C": {"challenge_process": 0.5, "model_the_way": 0.4},
+#     "sc4_D": {"model_the_way": 0.6, "challenge_process": 0.4},
+# }
 
-SLPI_MAPPING = {
-    # step1 → Challenge the Process / Enable Others
-    "sc1_A": {"challenge_process": 0.3, "model_the_way": 0.7},
-    "sc1_B": {"enable_others": 0.8, "inspire_vision": 0.5},
-    "sc1_C": {"challenge_process": 0.6, "model_the_way": 0.4},
-    "sc1_D": {"model_the_way": 0.5, "encourage_heart": 0.3},
-    # step2 → Enable Others / Encourage the Heart
-    "sc2_A": {"encourage_heart": 0.8, "enable_others": 0.3},
-    "sc2_B": {"model_the_way": 0.7, "challenge_process": 0.3},
-    "sc2_C": {"encourage_heart": 0.6, "enable_others": 0.6},
-    "sc2_D": {"enable_others": 0.5, "model_the_way": 0.4},
-    # step3 → Challenge the Process
-    "sc3_A": {"model_the_way": 0.6},
-    "sc3_B": {"challenge_process": 0.8, "inspire_vision": 0.5},
-    "sc3_C": {"challenge_process": 0.7, "model_the_way": 0.4},
-    "sc3_D": {"model_the_way": 0.4, "challenge_process": 0.2},
-    # step4 → Enable Others / Model the Way
-    "sc4_A": {"model_the_way": 0.8, "challenge_process": 0.3},
-    "sc4_B": {"enable_others": 0.8, "inspire_vision": 0.5},
-    "sc4_C": {"challenge_process": 0.5, "model_the_way": 0.4},
-    "sc4_D": {"model_the_way": 0.6, "challenge_process": 0.4},
-}
-
-SLPI_DIMS = ["model_the_way", "inspire_vision", "challenge_process", "enable_others", "encourage_heart"]
+# SLPI_DIMS = ["model_the_way", "inspire_vision", "challenge_process", "enable_others", "encourage_heart"]
 
 
-def compute_fingerprint(choices: list[str]) -> dict:
-    scores = {d: 0.0 for d in SLPI_DIMS}
-    counts = {d: 0 for d in SLPI_DIMS}
-    for choice in choices:
-        mapping = SLPI_MAPPING.get(choice, {})
-        for dim, val in mapping.items():
-            scores[dim] += val
-            counts[dim] += 1
-    display = {}
-    for dim in SLPI_DIMS:
-        display[dim] = round(scores[dim] / max(counts[dim], 1), 2)
-    return display
+# def compute_fingerprint(choices: list[str]) -> dict:
+#     scores = {d: 0.0 for d in SLPI_DIMS}
+#     counts = {d: 0 for d in SLPI_DIMS}
+#     for choice in choices:
+#         mapping = SLPI_MAPPING.get(choice, {})
+#         for dim, val in mapping.items():
+#             scores[dim] += val
+#             counts[dim] += 1
+#     display = {}
+#     for dim in SLPI_DIMS:
+#         display[dim] = round(scores[dim] / max(counts[dim], 1), 2)
+#     return display
+# ---------------------------------------------------------------------------------------------------------------------
 
 
 def build_summary(app) -> str:

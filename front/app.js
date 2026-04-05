@@ -266,6 +266,12 @@ function initRegistrationForm() {
       errorEl.classList.remove('hidden');
       return;
     }
+    const essayWords = essay.split(/\s+/).filter(w => w.length > 0).length;
+    if (essayWords < 70) {
+      errorEl.textContent = t('err_essay_short');
+      errorEl.classList.remove('hidden');
+      return;
+    }
     const payload = {
       name:               name,
       city:               city,

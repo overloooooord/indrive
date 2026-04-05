@@ -87,6 +87,7 @@ const TRANSLATIONS = {
     err_fill_all:   'Пожалуйста, заполните все обязательные поля',
     err_select_lang:'Выберите хотя бы один язык',
     err_tg_format:  'Введите корректный Telegram username',
+    err_essay_short:'Эссе слишком короткое — минимум 70 слов',
 
     // MBTI test
     mbti_title:     'Психометрический тест',
@@ -185,6 +186,7 @@ const TRANSLATIONS = {
     err_fill_all:   'Барлық міндетті өрістерді толтырыңыз',
     err_select_lang:'Кем дегенде бір тілді таңдаңыз',
     err_tg_format:  'Дұрыс Telegram username енгізіңіз',
+    err_essay_short:'Эссе тым қысқа — кемінде 70 сөз болуы керек',
 
     mbti_title:     'Психометриялық тест',
     back:           '← Артқа',
@@ -278,6 +280,7 @@ const TRANSLATIONS = {
     err_fill_all:   'Please fill in all required fields',
     err_select_lang:'Please select at least one language',
     err_tg_format:  'Please enter a valid Telegram username',
+    err_essay_short:'Essay is too short — minimum 70 words required',
 
     mbti_title:     'Psychometric Test',
     back:           '← Back',

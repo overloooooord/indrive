@@ -1,5 +1,8 @@
 import asyncio
 import logging
+import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
 from datetime import datetime
 from keyboards import kb_school
 from helpers import save_to_json
@@ -24,10 +27,10 @@ from keyboards import (
 from database import get_or_create_application, update_application, get_application
 from helpers import (
     validate_name, validate_age, validate_city, validate_year,
-    validate_team_size, validate_essay, extract_gpa,
-    compute_fingerprint, build_summary
+    validate_team_size, validate_essay, extract_gpa, build_summary
 )
 from config import MAX_OLYMPIADS, MAX_COURSES, MAX_PROJECTS, SCENARIO_TIMER_SECONDS
+from scenario_engine import compute_fingerprint
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -38,7 +41,6 @@ logger = logging.getLogger(__name__)
 # Each candidate sees: 5 entry questions + 5 branch questions = 10 total
 # ──────────────────────────────────────────────
 
-# Structure: scenario_id -> { "entry": {...}, "branches": { "A": {...}, "B": {...}, ... } }
 SCENARIOS = {
     "sc1": {
         "entry": {
@@ -572,7 +574,6 @@ async def process_school(callback: CallbackQuery, state: FSMContext):
 
 @router.message(EducationState.languages)
 async def process_languages(message: Message, state: FSMContext):
-    # Превращаем строку в список, убирая лишние пробелы
     langs = [lang.strip() for lang in message.text.split(",")]
     await update_application(message.from_user.id, languages=langs)
 
@@ -607,8 +608,9 @@ async def process_gpa(message: Message, state: FSMContext):
 
 async def ask_ielts(message: Message, state: FSMContext):
     await message.answer(
-        "Напишите ваш балл IELTS:\n"
-        "Например: 7.5",
+        "📈 **Ваш балл IELTS**\n\n"
+        "Пожалуйста, введите ваш общий балл (от 0 до 9.0).\n"
+        "Если вы не сдавали этот тест, нажмите кнопку «Пропустить».",
         reply_markup=kb_no_ielts()
     )
     await state.set_state(EducationState.ielts_score)
@@ -622,24 +624,44 @@ async def process_ielts_score(message: Message, state: FSMContext):
         if not (0.0 <= score <= 9.0):
             raise ValueError
     except ValueError:
-        await message.answer("Напиши балл числом от 0 до 9. Например: 7.5")
+        await message.answer("⚠️ Пожалуйста, введите корректное число от 0 до 9. Например: 7.5")
         return
-    await update_application(message.from_user.id, ielts_score=raw)
-    await ask_ent(message, state)
+    await update_application(message.from_user.id, ielts_score=score)
+    await state.update_data(last_score=score)
+    
+    await message.answer(
+        f"✅ Балл {score} сохранен.\n\n"
+        "📎 Теперь, пожалуйста, **прикрепите ваш сертификат IELTS** (фото или PDF-файл).",
+        reply_markup=kb_skip_cert()
+    )
+    await state.set_state(EducationState.ielts_doc)
 
 
 @router.callback_query(EducationState.ielts_score, F.data == "no_ielts")
 async def no_ielts(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("IELTS пропущен.")
+    await callback.message.edit_text("👌 IELTS пропущен. Переходим к ЕНТ.")
+    await ask_ent(callback.message, state)
+    await callback.answer()
+
+@router.message(EducationState.ielts_doc, F.document | F.photo)
+async def handle_ielts_doc(message: Message, state: FSMContext):
+    await save_file_logic(message, "IELTS Certificate")
+    await message.answer("✅ Сертификат IELTS успешно загружен.")
+    await ask_ent(message, state)
+
+@router.callback_query(EducationState.ielts_doc, F.data == "skip_cert")
+async def skip_ielts_doc(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("Ок, продолжим без файла.")
     await ask_ent(callback.message, state)
     await callback.answer()
 
 
 async def ask_ent(message: Message, state: FSMContext):
     await message.answer(
-        "Напишите ваш балл ЕНТ:\n"
-        "Например: 120",
-        reply_markup=kb_no_ent()
+        "🎓 **Ваш балл ЕНТ**\n\n"
+        "Введите ваш балл (от 0 до 140).\n"
+        "Если вы не сдавали ЕНТ, нажмите «Пропустить».",
+        reply_markup=kb_no_ent() 
     )
     await state.set_state(EducationState.ent_score)
 
@@ -652,71 +674,61 @@ async def process_ent_score(message: Message, state: FSMContext):
         if not (0 <= score <= 140):
             raise ValueError
     except ValueError:
-        await message.answer("Напиши балл ЕНТ числом от 0 до 140. Например: 120")
+        await message.answer("⚠️ Введите целое число от 0 до 140. Например: 120")
         return
-    await update_application(message.from_user.id, ent_score=raw)
-    await ask_test_certs(message, state)
+
+    await update_application(message.from_user.id, ent_score=score)
+    
+    await message.answer(
+        f"✅ Балл {score} записан.\n\n"
+        "📎 Прикрепите **скриншот или сертификат ЕНТ**.",
+        reply_markup=kb_skip_cert()
+    )
+    await state.set_state(EducationState.ent_doc)
 
 
 @router.callback_query(EducationState.ent_score, F.data == "no_ent")
 async def no_ent(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("ЕНТ пропущен.")
-    await ask_test_certs(callback.message, state)
+    await callback.message.edit_text("👌 ЕНТ пропущен.")
+    await after_certs(callback.message, state, callback.from_user.id)
     await callback.answer()
 
+@router.message(EducationState.ent_doc, F.document | F.photo)
+async def handle_ent_doc(message: Message, state: FSMContext):
+    await save_file_logic(message, "ENT Certificate")
+    await message.answer("✅ Сертификат ЕНТ успешно загружен.")
+    await after_certs(message, state, message.from_user.id)
 
-async def ask_test_certs(message: Message, state: FSMContext):
-    await message.answer(
-        "📎 Загрузите сертификаты IELTS / ЕНТ.\n\n"
-        "Отправь файл(ы) — PDF или фото.\n"
-        "Когда закончишь — нажми «Пропустить» или /done.",
-        reply_markup=kb_skip_cert()
-    )
-    await state.set_state(EducationState.cert_upload)
+@router.callback_query(EducationState.ent_doc, F.data == "skip_cert")
+async def skip_ent_doc(callback: CallbackQuery, state: FSMContext):
+    await after_certs(callback.message, state, callback.from_user.id)
+    await callback.answer()
 
-
-@router.message(EducationState.cert_upload, F.document | F.photo)
-async def handle_cert_upload(message: Message, state: FSMContext):
-    file_info = {"category": "certificate"}
+async def save_file_logic(message: Message, category: str):
+    file_info = {"category": category}
     if message.document:
         file_info.update({
             "type": "document",
             "file_id": message.document.file_id,
             "file_name": message.document.file_name,
-            "mime_type": message.document.mime_type,
-            "file_size": message.document.file_size,
         })
     elif message.photo:
         photo = message.photo[-1]
         file_info.update({
             "type": "photo",
             "file_id": photo.file_id,
-            "file_size": photo.file_size,
         })
+    
     app = await get_application(message.from_user.id)
     files = list(app.uploaded_files or [])
     files.append(file_info)
     await update_application(message.from_user.id, uploaded_files=files)
-    await message.answer(f"✅ Сертификат #{len(files)} получен. Отправь ещё или нажми «Пропустить».",
-                         reply_markup=kb_skip_cert())
-
-
-@router.callback_query(EducationState.cert_upload, F.data == "skip_cert")
-async def skip_cert(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("Сертификаты сохранены ✅")
-    await after_certs(callback.message, state, callback.from_user.id)
-    await callback.answer()
-
-
-@router.message(EducationState.cert_upload, F.text.lower().in_(["готово", "done", "/done"]))
-async def cert_done_text(message: Message, state: FSMContext):
-    await after_certs(message, state, message.from_user.id)
-
 
 async def after_certs(message: Message, state: FSMContext, user_id: int):
     await update_application(user_id, funnel_stage="education_done")
     await message.answer(
-        "Участвовал(а) ли ты в олимпиадах или научных конкурсах?",
+        "🏆 **Олимпиады и конкурсы**\n\n"
+        "Участвовал(а) ли ты в республиканских или международных олимпиадах?",
         reply_markup=kb_yes_skip()
     )
     await state.set_state(EducationState.olympiad_filter)
@@ -726,7 +738,7 @@ async def after_certs(message: Message, state: FSMContext, user_id: int):
 
 @router.callback_query(EducationState.olympiad_filter, F.data == "yes")
 async def olympiad_yes(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("Напиши предмет олимпиады.\nНапример: математика, биология, робототехника")
+    await callback.message.edit_text("Напиши предмет олимпиады.\nНапример: Математика, Биология, Робототехника")
     await state.set_state(EducationState.olympiad_subject)
     await callback.answer()
 
@@ -1159,7 +1171,7 @@ async def process_essay(message: Message, state: FSMContext):
     # Result is stored in DB — never recomputed later.
     try:
         import sys, os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
         from nlp.nlp_model import analyze_essay
         nlp_result = await asyncio.get_event_loop().run_in_executor(
             None, analyze_essay, essay_text
@@ -1331,11 +1343,15 @@ async def advance_scenario(bot: Bot, user_id: int, state: FSMContext, chosen_let
     phase = data.get("scenario_phase", "entry")
     choice_path = data.get("choice_path", [])
 
-    letter = chosen_letter if chosen_letter else "T"
-    choice_path.append(letter)
 
 
-    if chosen_letter == None:
+    if chosen_letter is None:
+        choice_path.append("T")
+
+        if phase == "entry":
+            choice_path.append("T")
+
+
         next_idx = idx + 1
         await state.update_data(choice_path=choice_path)
 
@@ -1354,13 +1370,13 @@ async def advance_scenario(bot: Bot, user_id: int, state: FSMContext, chosen_let
             await finish_scenarios(bot, user_id, state)
         return
 
+    choice_path.append(chosen_letter)
 
     if phase == "entry":
-        branch_key = chosen_letter if chosen_letter else "A"
         await state.update_data(
             choice_path=choice_path,
-            scenario_phase=branch_key,
-            scenario_entry_choice=branch_key
+            scenario_phase=chosen_letter,
+            scenario_entry_choice=chosen_letter
         )
         await send_scenario_question(bot, user_id, state, edit_message_id=msg_id)
 
@@ -1388,20 +1404,31 @@ async def finish_scenarios(bot: Bot, user_id: int, state: FSMContext):
     choice_path = data.get("choice_path", [])
     violations = data.get("timer_violations", 0)
 
-    fingerprint = compute_fingerprint(choice_path)
-    reliable = violations <= 2
+    # fingerprint = compute_fingerprint(choice_path)   OLD FINGERPRINT FROM HELPER
+    # reliable = violations <= 2    OLD FINGERPRINT FROM HELPER
+
+    timer_compliant = [ch != "T" for ch in choice_path]
+
+    fp_result = compute_fingerprint(choice_path, timer_compliant=timer_compliant)
+    # Override reliability with the actual event-based violation count (violations
+    # counts timeout events, not individual T-entries; 2 entry timeouts → 4 T-entries
+    # but only 2 events — we allow up to 3 events before marking unreliable).
+    if fp_result["fingerprint_reliable"] is not None:
+        fp_result["fingerprint_reliable"] = violations <= 3
 
     await update_application(
         user_id,
         scenario_choices={"choices": choice_path},
-        fingerprint_display=fingerprint,
-        fingerprint_reliable=reliable,
+        # fingerprint_display=fingerprint,  OLD FINGERPRINT FROM HELPER
+        # fingerprint_reliable=reliable,    OLD FINGERPRINT FROM HELPER
+        fingerprint_display=fp_result["fingerprint_display"],
+        fingerprint_reliable=fp_result["fingerprint_reliable"],
         timer_violations=violations,
         funnel_stage="scenarios_done"
     )
 
     text = "✅ Сценарии завершены!\n\n"
-    if not reliable:
+    if not fp_result["fingerprint_reliable"]:
         text += "⚠️ Некоторые ответы не засчитаны из-за таймера.\n\n"
     text += "Последний шаг — можешь прикрепить материалы."
 
@@ -1501,7 +1528,7 @@ async def finalize_application(message: Message, state: FSMContext, user_id: int
     await message.answer(
         "🎉 *Заявка успешно отправлена!*\n\n"
         "Мы изучим её и свяжемся с тобой в течение 2–3 дней.\n\n"
-        "Вот что мы получили:\n\n" + summary,
+        "Удачи! Ниже — резюме того, что ты заполнил(а):\n\n" + summary,
         parse_mode="Markdown"
     )
     await state.clear()

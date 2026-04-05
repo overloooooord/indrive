@@ -1,6 +1,11 @@
 
 import logging
+import sys
+import os
+import threading
 import bcrypt
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pipeline'))
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -36,6 +41,52 @@ app_logger = logging.getLogger('candidates.applications')
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Helpers: fingerprint + essay NLP для веб-заявок
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def _web_choices_to_path(choices: dict) -> list[str]:
+    """Convert web form scenario_choices dict to flat 10-element list for scenario_engine."""
+    path = []
+    for i in range(1, 6):
+        sc = choices.get(f"sc{i}", {})
+        path.append(sc.get("entry", "T"))
+        path.append(sc.get("branch", "T"))
+    return path
+
+
+def _compute_and_save_fingerprint(application):
+    """Compute fingerprint from web scenario_choices and save to Application."""
+    try:
+        from scenario_engine import compute_fingerprint
+        choices = application.scenario_choices or {}
+        if not choices:
+            return
+        choice_path = _web_choices_to_path(choices)
+        fp_result = compute_fingerprint(choice_path)
+        application.fingerprint_display = fp_result.get("fingerprint_display")
+        application.fingerprint_reliable = fp_result.get("fingerprint_reliable", False)
+        application.save(update_fields=['fingerprint_display', 'fingerprint_reliable'])
+    except Exception as e:
+        logger.error(f"Fingerprint computation failed for app #{application.pk}: {e}")
+
+
+def _compute_and_save_essay_nlp(application):
+    """Run essay NLP analysis in a background thread and save result."""
+    def _run():
+        try:
+            from nlp.nlp_model import analyze_essay
+            essay = application.essay or ''
+            if len(essay.split()) < 50:
+                return
+            result = analyze_essay(essay)
+            application.essay_nlp = result.get("scores")
+            application.save(update_fields=['essay_nlp'])
+        except Exception as e:
+            logger.error(f"Essay NLP failed for app #{application.pk}: {e}")
+    threading.Thread(target=_run, daemon=True).start()
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ЗАЯВКИ — CRUD
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -62,6 +113,12 @@ def application_list_create(request):
             f"олимпиад: {len(application.olympiads or [])}, "
             f"проектов: {len(application.projects or [])}"
         )
+
+        # Fingerprint (быстро — синхронно)
+        _compute_and_save_fingerprint(application)
+
+        # Essay NLP (тяжело — в фоне, не блокирует ответ)
+        _compute_and_save_essay_nlp(application)
 
         # Telegram уведомление
         try:
@@ -325,10 +382,11 @@ def _load_from_local_db(search):
             'projects': app.projects or [],
             'essay_text': app.essay or '',
             'essay_word_count': len((app.essay or '').split()),
-            'scenario_choices': {},
-            'fingerprint_display': {},
-            'fingerprint_reliable': False,
-            'timer_violations': 0,
+            'essay_nlp': app.essay_nlp,
+            'scenario_choices': app.scenario_choices or {},
+            'fingerprint_display': app.fingerprint_display or {},
+            'fingerprint_reliable': bool(app.fingerprint_reliable),
+            'timer_violations': app.timer_violations or 0,
             'score_prediction': sr.get('prediction', ''),
             'score_confidence': sr.get('confidence'),
             'score_probabilities': sr.get('probabilities'),
@@ -431,7 +489,13 @@ def admin_score_application(request, pk):
                 'essay': {'text': app.essay or '', 'word_count': len((app.essay or '').split())},
                 'motivation': {'text': ''},
                 'self_assessment': {},
-                'bot_metadata': {},
+                'bot_metadata': {
+                    'fingerprint_display': app.fingerprint_display or {},
+                    'fingerprint_reliable': bool(app.fingerprint_reliable),
+                    'scenario_choices': app.scenario_choices or {},
+                    'timer_violations': app.timer_violations or 0,
+                    'essay_nlp': app.essay_nlp or {},
+                },
             }
 
         result = score_candidate(candidate_dict)

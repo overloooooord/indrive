@@ -151,6 +151,13 @@ class Application(models.Model):
 
     # ── Эссе ──
     essay = models.TextField('Эссе', blank=True, default='')
+    essay_nlp = models.JSONField('NLP-анализ эссе', null=True, blank=True)
+
+    # ── Сценарии / SLPI ──
+    scenario_choices = models.JSONField('Выборы сценариев', default=dict, blank=True)
+    fingerprint_display = models.JSONField('SLPI профиль', null=True, blank=True)
+    fingerprint_reliable = models.BooleanField('Fingerprint надёжен', null=True, blank=True)
+    timer_violations = models.IntegerField('Нарушения таймера', default=0)
 
     # ── ML scoring ──
     scoring_result = models.JSONField(
@@ -203,8 +210,8 @@ class BotApplication(models.Model):
     languages = models.JSONField(null=True, default=list)
 
     # IELTS / ENT
-    ielts_score = models.CharField(max_length=20, null=True, blank=True)
-    ent_score = models.CharField(max_length=20, null=True, blank=True)
+    ielts_score = models.FloatField(null=True, blank=True)
+    ent_score = models.IntegerField(null=True, blank=True)
 
     # education arrays (JSON)
     olympiads = models.JSONField(null=True, default=list)
@@ -216,6 +223,7 @@ class BotApplication(models.Model):
     # essay
     essay_text = models.TextField(null=True, blank=True)
     essay_word_count = models.IntegerField(null=True)
+    essay_nlp = models.JSONField(null=True, blank=True)
 
     # scenarios / fingerprint
     scenario_choices = models.JSONField(null=True, default=dict)
@@ -289,6 +297,7 @@ class BotApplication(models.Model):
                 'fingerprint_reliable': bool(self.fingerprint_reliable),
                 'scenario_choices': self.scenario_choices or {},
                 'timer_violations': self.timer_violations or 0,
+                'essay_nlp': self.essay_nlp or {},
             },
         }
 

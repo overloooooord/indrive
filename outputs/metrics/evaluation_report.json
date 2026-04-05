@@ -1,0 +1,140 @@
+{
+  "model_metrics": {
+    "model": "XGBoost",
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
+    "auc_roc": 1.0,
+    "per_class": {
+      "reject": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 4.0
+      },
+      "maybe": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 7.0
+      },
+      "shortlist": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 9.0
+      }
+    }
+  },
+  "baseline_metrics": {
+    "GPA Ranking": {
+      "model": "GPA Ranking",
+      "accuracy": 0.5,
+      "precision_macro": 0.5079365079365079,
+      "recall_macro": 0.5767195767195766,
+      "f1_macro": 0.5285714285714286,
+      "per_class": {
+        "reject": {
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "support": 4.0
+        },
+        "maybe": {
+          "precision": 0.2857142857142857,
+          "recall": 0.2857142857142857,
+          "f1": 0.2857142857142857,
+          "support": 7.0
+        },
+        "shortlist": {
+          "precision": 0.5714285714285714,
+          "recall": 0.4444444444444444,
+          "f1": 0.5,
+          "support": 9.0
+        }
+      }
+    },
+    "Rule-Based": {
+      "model": "Rule-Based",
+      "accuracy": 0.45,
+      "precision_macro": 0.47222222222222215,
+      "recall_macro": 0.5396825396825397,
+      "f1_macro": 0.48888888888888893,
+      "per_class": {
+        "reject": {
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "support": 4.0
+        },
+        "maybe": {
+          "precision": 0.25,
+          "recall": 0.2857142857142857,
+          "f1": 0.26666666666666666,
+          "support": 7.0
+        },
+        "shortlist": {
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "f1": 0.4,
+          "support": 9.0
+        }
+      }
+    },
+    "Logistic Regression": {
+      "model": "Logistic Regression",
+      "accuracy": 1.0,
+      "precision_macro": 1.0,
+      "recall_macro": 1.0,
+      "f1_macro": 1.0,
+      "per_class": {
+        "reject": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4.0
+        },
+        "maybe": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 7.0
+        },
+        "shortlist": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 9.0
+        }
+      }
+    }
+  },
+  "cross_validation": {
+    "n_folds": 5,
+    "accuracy_mean": 0.95,
+    "accuracy_std": 0.046770717334674264,
+    "f1_macro_mean": 0.9409475709475709,
+    "f1_macro_std": 0.055983190355853,
+    "fold_accuracies": [
+      0.9375,
+      1.0,
+      0.9375,
+      1.0,
+      0.875
+    ],
+    "fold_f1s": [
+      0.9220779220779219,
+      1.0,
+      0.9326599326599326,
+      1.0,
+      0.85
+    ]
+  },
+  "error_analysis": {
+    "total_errors": 0,
+    "total_samples": 20,
+    "error_rate": 0.0,
+    "error_types": {}
+  }
+}

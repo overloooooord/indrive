@@ -143,11 +143,11 @@ select.form-input option {background:var(--bg-card);}
 </div>
 <div class="card" id="step4" data-step="4" style="display:none;">
     <h2 class="step-title">📝 Эссе</h2>
-    <p class="step-subtitle">Шаг 4 из 6 · Минимум 200 слов</p>
+    <p class="step-subtitle">Шаг 4 из 6 · Минимум 70 слов</p>
     <div class="field-group">
         <label class="form-label">Твоё лидерское эссе *</label>
         <textarea class="form-input" id="essayText" rows="10" style="resize:vertical;" placeholder="Расскажи историю, после которой ты изменил(а) своё отношение к чему-то важному. Как этот опыт сформировал тебя как лидера?..."></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:0.8rem;"><span id="wordCount" style="color:var(--text-muted);">0 слов (минимум 200)</span></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:0.8rem;"><span id="wordCount" style="color:var(--text-muted);">0 слов (минимум 70)</span></div>
     </div>
     <div class="nav-btns">
         <button class="btn-back" onclick="prevStep(4)">← Назад</button>
@@ -266,7 +266,7 @@ function nextStep(from) {
     }
     if (from === 4) {
         const wc = countWords(document.getElementById('essayText').value);
-        if (wc < 200) return showToast(`Эссе минимум 200 слов (сейчас ${wc})`, 'error');
+        if (wc < 70) return showToast(`Эссе минимум 70 слов (сейчас ${wc})`, 'error');
     }
     if (from === 6) return submitForm();
     showStep(from + 1);
@@ -277,8 +277,8 @@ function countWords(text) { return text.trim().split(/\s+/).filter(w => w.length
 document.getElementById('essayText')?.addEventListener('input', () => {
     const wc = countWords(document.getElementById('essayText').value);
     const el = document.getElementById('wordCount');
-    el.textContent = `${wc} слов ${wc >= 200 ? '✓' : `(минимум 200)`}`;
-    el.style.color = wc >= 200 ? 'var(--accent)' : 'var(--text-muted)';
+    el.textContent = `${wc} слов ${wc >= 70 ? '✓' : `(минимум 70)`}`;
+    el.style.color = wc >= 70 ? 'var(--accent)' : 'var(--text-muted)';
 });
 // ── Dynamic items ─────────────────────────────────────────
 let olympiadCount = 0, courseCount = 0, projectCount = 0;

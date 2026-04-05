@@ -1,0 +1,336 @@
+{
+  "city": {
+    "field": "Город",
+    "groups": {
+      "Актау": {
+        "count": 9,
+        "mean_shortlist_prob": 0.42277587867445415,
+        "std_shortlist_prob": 0.4311417115424483,
+        "median_shortlist_prob": 0.11311302334070206,
+        "shortlist_rate": 0.4444444444444444
+      },
+      "Алматы": {
+        "count": 11,
+        "mean_shortlist_prob": 0.36708163063634525,
+        "std_shortlist_prob": 0.4404514391045897,
+        "median_shortlist_prob": 0.059292588382959366,
+        "shortlist_rate": 0.36363636363636365
+      },
+      "Астана": {
+        "count": 6,
+        "mean_shortlist_prob": 0.6043842332437634,
+        "std_shortlist_prob": 0.411605907087796,
+        "median_shortlist_prob": 0.8225913643836975,
+        "shortlist_rate": 0.6666666666666666
+      },
+      "Атырау": {
+        "count": 6,
+        "mean_shortlist_prob": 0.48469588176036876,
+        "std_shortlist_prob": 0.465715078515031,
+        "median_shortlist_prob": 0.4775036871433258,
+        "shortlist_rate": 0.5
+      },
+      "Жезказган": {
+        "count": 7,
+        "mean_shortlist_prob": 0.6841306212757315,
+        "std_shortlist_prob": 0.3665773905016145,
+        "median_shortlist_prob": 0.8870434165000916,
+        "shortlist_rate": 0.7142857142857143
+      },
+      "Караганда": {
+        "count": 4,
+        "mean_shortlist_prob": 0.47028043190948665,
+        "std_shortlist_prob": 0.41916889274006947,
+        "median_shortlist_prob": 0.4535747095942497,
+        "shortlist_rate": 0.5
+      },
+      "Костанай": {
+        "count": 8,
+        "mean_shortlist_prob": 0.248405379767064,
+        "std_shortlist_prob": 0.3911938178772714,
+        "median_shortlist_prob": 0.016429892741143703,
+        "shortlist_rate": 0.25
+      },
+      "Кызылорда": {
+        "count": 11,
+        "mean_shortlist_prob": 0.3741743080317974,
+        "std_shortlist_prob": 0.43122296143591604,
+        "median_shortlist_prob": 0.0349215529859066,
+        "shortlist_rate": 0.36363636363636365
+      },
+      "Павлодар": {
+        "count": 5,
+        "mean_shortlist_prob": 0.23934288658201694,
+        "std_shortlist_prob": 0.33686736221804325,
+        "median_shortlist_prob": 0.09028429538011551,
+        "shortlist_rate": 0.2
+      },
+      "Семей": {
+        "count": 7,
+        "mean_shortlist_prob": 0.44846731424331665,
+        "std_shortlist_prob": 0.4597467582098079,
+        "median_shortlist_prob": 0.11840081214904785,
+        "shortlist_rate": 0.42857142857142855
+      },
+      "Талдыкорган": {
+        "count": 2,
+        "mean_shortlist_prob": 0.5656970962882042,
+        "std_shortlist_prob": 0.3919282928109169,
+        "median_shortlist_prob": 0.5656970962882042,
+        "shortlist_rate": 0.5
+      },
+      "Тараз": {
+        "count": 7,
+        "mean_shortlist_prob": 0.4279375201357262,
+        "std_shortlist_prob": 0.4550559405605725,
+        "median_shortlist_prob": 0.08170204609632492,
+        "shortlist_rate": 0.42857142857142855
+      },
+      "Туркестан": {
+        "count": 11,
+        "mean_shortlist_prob": 0.37940590727058326,
+        "std_shortlist_prob": 0.41246013092406536,
+        "median_shortlist_prob": 0.09168992936611176,
+        "shortlist_rate": 0.36363636363636365
+      },
+      "Шымкент": {
+        "count": 6,
+        "mean_shortlist_prob": 0.4953709055359165,
+        "std_shortlist_prob": 0.4564286480381806,
+        "median_shortlist_prob": 0.5103449374437332,
+        "shortlist_rate": 0.5
+      }
+    },
+    "max_disparity": 0.4447877346937146,
+    "statistical_test": {
+      "test": "ANOVA (one-way)",
+      "f_statistic": 0.49602081172205065,
+      "p_value": 0.9117260806755325,
+      "significant": "False"
+    },
+    "has_bias": true
+  },
+  "school_type": {
+    "field": "Тип школы",
+    "groups": {
+      "college": {
+        "count": 21,
+        "mean_shortlist_prob": 0.438552450965203,
+        "std_shortlist_prob": 0.44117379591036615,
+        "median_shortlist_prob": 0.11840081214904785,
+        "shortlist_rate": 0.42857142857142855
+      },
+      "general": {
+        "count": 17,
+        "mean_shortlist_prob": 0.4175971021382686,
+        "std_shortlist_prob": 0.44959004442722544,
+        "median_shortlist_prob": 0.09168992936611176,
+        "shortlist_rate": 0.4117647058823529
+      },
+      "gymnasium": {
+        "count": 17,
+        "mean_shortlist_prob": 0.5137604459681931,
+        "std_shortlist_prob": 0.4320024350930631,
+        "median_shortlist_prob": 0.8205985426902771,
+        "shortlist_rate": 0.5294117647058824
+      },
+      "lyceum": {
+        "count": 13,
+        "mean_shortlist_prob": 0.30490285330093825,
+        "std_shortlist_prob": 0.39264368192632404,
+        "median_shortlist_prob": 0.08170204609632492,
+        "shortlist_rate": 0.3076923076923077
+      },
+      "other": {
+        "count": 12,
+        "mean_shortlist_prob": 0.39738699692922336,
+        "std_shortlist_prob": 0.4492026750615878,
+        "median_shortlist_prob": 0.029718441888689995,
+        "shortlist_rate": 0.4166666666666667
+      },
+      "specialized": {
+        "count": 20,
+        "mean_shortlist_prob": 0.4492065036669374,
+        "std_shortlist_prob": 0.43417228739139635,
+        "median_shortlist_prob": 0.16147810220718384,
+        "shortlist_rate": 0.45
+      }
+    },
+    "max_disparity": 0.2088575926672549,
+    "statistical_test": {
+      "test": "ANOVA (one-way)",
+      "f_statistic": 0.34473684345518585,
+      "p_value": 0.8844458919848127,
+      "significant": "False"
+    },
+    "has_bias": true
+  },
+  "has_mentor": {
+    "field": "Наличие ментора",
+    "groups": {
+      "Есть ментор": {
+        "count": 24,
+        "mean_shortlist_prob": 0.3650584241452937,
+        "std_shortlist_prob": 0.40466891257494425,
+        "median_shortlist_prob": 0.1262398101389408,
+        "shortlist_rate": 0.3333333333333333
+      },
+      "Нет ментора": {
+        "count": 76,
+        "mean_shortlist_prob": 0.44733932549991695,
+        "std_shortlist_prob": 0.4469880056557413,
+        "median_shortlist_prob": 0.1082775704562664,
+        "shortlist_rate": 0.4605263157894737
+      }
+    },
+    "max_disparity": 0.08228090135462324,
+    "statistical_test": {
+      "test": "ANOVA (one-way)",
+      "f_statistic": 0.6331089152362519,
+      "p_value": 0.42814031251773516,
+      "significant": "False"
+    },
+    "has_bias": "False"
+  },
+  "age_group": {
+    "field": "Возрастная группа",
+    "groups": {
+      "14-16": {
+        "count": 34,
+        "mean_shortlist_prob": 0.3441823144470725,
+        "std_shortlist_prob": 0.41758992981987497,
+        "median_shortlist_prob": 0.03851055167615414,
+        "shortlist_rate": 0.35294117647058826
+      },
+      "17-18": {
+        "count": 33,
+        "mean_shortlist_prob": 0.5251575531720212,
+        "std_shortlist_prob": 0.44880714481849815,
+        "median_shortlist_prob": 0.8805413842201233,
+        "shortlist_rate": 0.5454545454545454
+      },
+      "19+": {
+        "count": 33,
+        "mean_shortlist_prob": 0.41596342338192643,
+        "std_shortlist_prob": 0.43019034588212385,
+        "median_shortlist_prob": 0.11840081214904785,
+        "shortlist_rate": 0.3939393939393939
+      }
+    },
+    "max_disparity": 0.1809752387249487,
+    "statistical_test": {
+      "test": "ANOVA (one-way)",
+      "f_statistic": 1.4410831246389133,
+      "p_value": 0.24169262692363272,
+      "significant": "False"
+    },
+    "has_bias": true
+  },
+  "region": {
+    "field": "Регион",
+    "groups": {
+      "Алматинская область": {
+        "count": 13,
+        "mean_shortlist_prob": 0.39763785612124664,
+        "std_shortlist_prob": 0.439225373566431,
+        "median_shortlist_prob": 0.09432408958673477,
+        "shortlist_rate": 0.38461538461538464
+      },
+      "Атырауская область": {
+        "count": 6,
+        "mean_shortlist_prob": 0.48469588176036876,
+        "std_shortlist_prob": 0.465715078515031,
+        "median_shortlist_prob": 0.4775036871433258,
+        "shortlist_rate": 0.5
+      },
+      "Восточно-Казахстанская область": {
+        "count": 7,
+        "mean_shortlist_prob": 0.44846731424331665,
+        "std_shortlist_prob": 0.4597467582098079,
+        "median_shortlist_prob": 0.11840081214904785,
+        "shortlist_rate": 0.42857142857142855
+      },
+      "Жамбылская область": {
+        "count": 7,
+        "mean_shortlist_prob": 0.4279375201357262,
+        "std_shortlist_prob": 0.4550559405605725,
+        "median_shortlist_prob": 0.08170204609632492,
+        "shortlist_rate": 0.42857142857142855
+      },
+      "Карагандинская область": {
+        "count": 4,
+        "mean_shortlist_prob": 0.47028043190948665,
+        "std_shortlist_prob": 0.41916889274006947,
+        "median_shortlist_prob": 0.4535747095942497,
+        "shortlist_rate": 0.5
+      },
+      "Костанайская область": {
+        "count": 8,
+        "mean_shortlist_prob": 0.248405379767064,
+        "std_shortlist_prob": 0.3911938178772714,
+        "median_shortlist_prob": 0.016429892741143703,
+        "shortlist_rate": 0.25
+      },
+      "Кызылординская область": {
+        "count": 11,
+        "mean_shortlist_prob": 0.3741743080317974,
+        "std_shortlist_prob": 0.43122296143591604,
+        "median_shortlist_prob": 0.0349215529859066,
+        "shortlist_rate": 0.36363636363636365
+      },
+      "Мангистауская область": {
+        "count": 9,
+        "mean_shortlist_prob": 0.42277587867445415,
+        "std_shortlist_prob": 0.4311417115424483,
+        "median_shortlist_prob": 0.11311302334070206,
+        "shortlist_rate": 0.4444444444444444
+      },
+      "Павлодарская область": {
+        "count": 5,
+        "mean_shortlist_prob": 0.23934288658201694,
+        "std_shortlist_prob": 0.33686736221804325,
+        "median_shortlist_prob": 0.09028429538011551,
+        "shortlist_rate": 0.2
+      },
+      "Туркестанская область": {
+        "count": 17,
+        "mean_shortlist_prob": 0.4203347301877597,
+        "std_shortlist_prob": 0.4320627024065968,
+        "median_shortlist_prob": 0.09168992936611176,
+        "shortlist_rate": 0.4117647058823529
+      },
+      "Ульытауская область": {
+        "count": 7,
+        "mean_shortlist_prob": 0.6841306212757315,
+        "std_shortlist_prob": 0.3665773905016145,
+        "median_shortlist_prob": 0.8870434165000916,
+        "shortlist_rate": 0.7142857142857143
+      },
+      "город Астана": {
+        "count": 6,
+        "mean_shortlist_prob": 0.6043842332437634,
+        "std_shortlist_prob": 0.411605907087796,
+        "median_shortlist_prob": 0.8225913643836975,
+        "shortlist_rate": 0.6666666666666666
+      }
+    },
+    "max_disparity": 0.4447877346937146,
+    "statistical_test": {
+      "test": "ANOVA (one-way)",
+      "f_statistic": 0.5115944051275642,
+      "p_value": 0.8908107186138213,
+      "significant": "False"
+    },
+    "has_bias": true
+  },
+  "verdict": {
+    "status": "⚠️ NEEDS REVIEW",
+    "summary": "Обнаружен потенциальный bias по: Город, Тип школы, Возрастная группа, Регион. Необходимо исследовать косвенные корреляции между исключёнными демографическими полями и используемыми фичами.",
+    "biased_fields": [
+      "Город",
+      "Тип школы",
+      "Возрастная группа",
+      "Регион"
+    ]
+  }
+}

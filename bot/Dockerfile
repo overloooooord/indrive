@@ -2,9 +2,14 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
+
+COPY bot/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY bot/ ./bot/
+COPY pipeline/ ./pipeline/
 
-CMD ["python3.12", "bot.py"]
+WORKDIR /app/bot
+
+CMD ["python", "bot.py"]

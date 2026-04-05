@@ -115,6 +115,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'name', 'age', 'city', 'region', 'school_type', 'languages',
             'gpa', 'gpa_raw', 'olympiads', 'courses',
             'projects', 'essay',
+            'scenario_choices',
             'scoring_result', 'status',
             'created_at', 'updated_at',
         ]
