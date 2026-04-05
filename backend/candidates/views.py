@@ -4,6 +4,7 @@ import sys
 import os
 import threading
 import bcrypt
+from datetime import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pipeline'))
 
@@ -116,6 +117,8 @@ def application_list_create(request):
             source='web',
             funnel_stage='completed',
             consent_given=True,
+            start_timestamp=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
             name=data.get('name', ''),
             age=data.get('age'),
             city=data.get('city', ''),
