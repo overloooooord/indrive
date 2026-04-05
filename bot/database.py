@@ -42,6 +42,7 @@ class Application(Base):
 
     # education
     school_type: Mapped[str | None] = mapped_column(String(50))
+    gpa_raw: Mapped[str | None] = mapped_column(String(50))
     gpa: Mapped[float | None] = mapped_column(Float)
     languages: Mapped[list[str] | None] = mapped_column(JSON, default=[])
 
