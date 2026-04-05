@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import (
-    String, Integer, Boolean, Float, Text, DateTime, JSON, BigInteger, ForeignKey, delete, select, update
+    String, Integer, Boolean, Float, Text, DateTime, JSON, BigInteger, ForeignKey, delete, select, update, text
 )
 from datetime import datetime
 from config import DATABASE_URL
@@ -88,6 +88,10 @@ class Application(Base):
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Add columns that may not exist in older deployments
+        await conn.execute(text(
+            "ALTER TABLE applications ADD COLUMN IF NOT EXISTS candidate_json JSONB"
+        ))
 
 
 async def get_or_create_application(telegram_id: int, username: str | None = None) -> Application:
