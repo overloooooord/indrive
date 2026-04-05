@@ -37,29 +37,38 @@ def panel_login(request):
     username = str(data.get('username', '')).strip()
     password = str(data.get('password', '')).strip()
     expected_user = getattr(settings, 'PANEL_USERNAME', 'admin')
-    password_hash = getattr(settings, 'PANEL_PASSWORD_HASH', '')
     panel_password = getattr(settings, 'PANEL_PASSWORD', '')
-    
+
     # Fallback to plain password if env var is missing or empty
     if not panel_password:
         panel_password = 'admin'
-        
+
+    # ── Admin check ───────────────────────────────────────────────
     if username == expected_user and password == panel_password:
         request.session['panel_auth'] = True
         logger.info(f"Вход в админ-панель: {username}")
         return JsonResponse({'success': True, 'redirect': '/panel/'})
+
+    # ── Teacher check ─────────────────────────────────────────────
     teachers = getattr(settings, 'TEACHERS', {})
+
+    # DEBUG: выводим что загружено из TEACHERS_JSON
+    logger.warning(f"[LOGIN DEBUG] username='{username}' | TEACHERS keys={list(teachers.keys())} | username_in_teachers={username in teachers}")
+
     if username in teachers:
         teacher = teachers[username]
-        # Поддерживаем оба ключа: 'password' и 'password_hash' (документация ранее указывала 'password_hash')
+        # Поддерживаем оба ключа: 'password' и 'password_hash'
         teacher_password = teacher.get('password', '') or teacher.get('password_hash', '')
-        if teacher_password and password == teacher_password:
+        passwords_match = teacher_password and password == teacher_password
+        logger.warning(f"[LOGIN DEBUG] teacher found | has_password_key={'password' in teacher} | has_password_hash_key={'password_hash' in teacher} | passwords_match={passwords_match}")
+        if passwords_match:
             request.session['teacher_auth'] = username
             request.session['teacher_name'] = teacher.get('name', username)
             logger.info(f"Вход в кабинет учителя: {username} ({teacher.get('name', '')})")
             return JsonResponse({'success': True, 'redirect': '/teacher/'})
-        logger.warning(f"Неудачная попытка входа учителя: username={username} (пароль не совпал)")
-    logger.warning(f"Неудачная попытка входа: username={username}")
+        logger.warning(f"[LOGIN DEBUG] teacher password mismatch for username={username}")
+
+    logger.warning(f"Неудачная попытка входа: username={username} | teachers_loaded={len(teachers)}")
     return JsonResponse(
         {'success': False, 'error': 'Неверный логин или пароль'},
         status=401,
