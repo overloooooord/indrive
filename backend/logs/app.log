@@ -267,3 +267,19 @@
 [2026-04-05 03:50:58,286] ERROR candidates — Ошибка скоринга заявки #6: Feature shape mismatch, expected: 23, got 31
 [2026-04-05 03:54:51,208] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
 [2026-04-05 03:54:53,259] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:58:10,124] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:58:10,323] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:12:00,708] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:12:02,737] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:12:09,853] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:12:10,110] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:13:00,915] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:13:01,209] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:13:18,923] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:13:20,956] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:20:32,688] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:20:32,961] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:21:01,515] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:21:03,632] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:39:30,967] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:39:31,264] INFO candidates.ml_service — ML model loaded successfully
