@@ -337,7 +337,10 @@ def admin_login(request):
     return Response({'success': True})
 
 
+@csrf_exempt
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def admin_applications(request):
     if not request.session.get('panel_auth'):
         return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
@@ -366,8 +369,8 @@ def admin_applications(request):
 
 
 def _load_from_bot_db(search, funnel, scored):
-    """Load from BotApplication (Supabase). Raises on connection error."""
-    qs = BotApplication.objects.using('bot_db').all()
+    """Load from BotApplication (applications table)."""
+    qs = BotApplication.objects.all()
 
     if search:
         qs = qs.filter(
@@ -505,7 +508,7 @@ def admin_score_application(request, pk):
 
     # Try BotApplication first
     try:
-        app = BotApplication.objects.using('bot_db').get(pk=pk)
+        app = BotApplication.objects.get(pk=pk)
         source = 'bot_db'
     except Exception:
         pass
@@ -590,7 +593,7 @@ def admin_score_all_applications(request):
 
     # Try bot_db first
     try:
-        qs = BotApplication.objects.using('bot_db').filter(
+        qs = BotApplication.objects.filter(
             Q(score_prediction__isnull=True) | Q(score_prediction='')
         )
         unscored = list(qs[:50])
