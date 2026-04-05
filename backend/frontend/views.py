@@ -39,7 +39,12 @@ def panel_login(request):
     expected_user = getattr(settings, 'PANEL_USERNAME', 'admin')
     password_hash = getattr(settings, 'PANEL_PASSWORD_HASH', '')
     panel_password = getattr(settings, 'PANEL_PASSWORD', '')
-    if username == expected_user and panel_password and password == panel_password:
+    
+    # Fallback to plain password if env var is missing or empty
+    if not panel_password:
+        panel_password = 'admin'
+        
+    if username == expected_user and password == panel_password:
         request.session['panel_auth'] = True
         logger.info(f"Вход в админ-панель: {username}")
         return JsonResponse({'success': True, 'redirect': '/panel/'})
