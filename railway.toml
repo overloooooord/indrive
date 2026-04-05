@@ -1,7 +1,6 @@
 [build]
 dockerfilePath = "backend/Dockerfile"
-watchPatterns = ["backend/**", "pipeline/**", "data/**", "front/**"]
 
 [deploy]
-healthcheckPath = "/panel/login/"
 restartPolicyType = "on_failure"
+startCommand = ""
