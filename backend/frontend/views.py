@@ -38,26 +38,20 @@ def panel_login(request):
     password = str(data.get('password', '')).strip()
     expected_user = getattr(settings, 'PANEL_USERNAME', 'admin')
     password_hash = getattr(settings, 'PANEL_PASSWORD_HASH', '')
-    if username == expected_user and password_hash:
-        try:
-            if bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
-                request.session['panel_auth'] = True
-                logger.info(f"Вход в админ-панель: {username}")
-                return JsonResponse({'success': True, 'redirect': '/panel/'})
-        except Exception as e:
-            logger.error(f"Ошибка bcrypt admin: {e}")
+    panel_password = getattr(settings, 'PANEL_PASSWORD', '')
+    if username == expected_user and panel_password and password == panel_password:
+        request.session['panel_auth'] = True
+        logger.info(f"Вход в админ-панель: {username}")
+        return JsonResponse({'success': True, 'redirect': '/panel/'})
     teachers = getattr(settings, 'TEACHERS', {})
     if username in teachers:
         teacher = teachers[username]
-        teacher_hash = teacher.get('password_hash', '')
-        try:
-            if teacher_hash and bcrypt.checkpw(password.encode('utf-8'), teacher_hash.encode('utf-8')):
-                request.session['teacher_auth'] = username
-                request.session['teacher_name'] = teacher.get('name', username)
-                logger.info(f"Вход в кабинет учителя: {username} ({teacher.get('name', '')})")
-                return JsonResponse({'success': True, 'redirect': '/teacher/'})
-        except Exception as e:
-            logger.error(f"Ошибка bcrypt teacher {username}: {e}")
+        teacher_password = teacher.get('password', '')
+        if teacher_password and password == teacher_password:
+            request.session['teacher_auth'] = username
+            request.session['teacher_name'] = teacher.get('name', username)
+            logger.info(f"Вход в кабинет учителя: {username} ({teacher.get('name', '')})")
+            return JsonResponse({'success': True, 'redirect': '/teacher/'})
     logger.warning(f"Неудачная попытка входа: username={username}")
     return JsonResponse(
         {'success': False, 'error': 'Неверный логин или пароль'},

@@ -89,7 +89,7 @@ ML_DATASET_PATH = os.path.join(PROJECT_ROOT, 'data', 'synthetic_dataset.json')
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 TELEGRAM_CHAT_IDS = config('TELEGRAM_CHAT_IDS', default='', cast=Csv(int))
 PANEL_USERNAME = config('PANEL_USERNAME', default='admin')
-# ВАЖНО: задайте PANEL_PASSWORD_HASH в .env файле!
+PANEL_PASSWORD = config('PANEL_PASSWORD', default='')
 PANEL_PASSWORD_HASH = config('PANEL_PASSWORD_HASH', default='')
 TEACHERS_RAW = config('TEACHERS_JSON', default='{}')  # JSON строка из .env
 try:
