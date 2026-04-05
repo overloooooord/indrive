@@ -82,6 +82,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 ML_MODEL_PATH = os.path.join(PROJECT_ROOT, 'pipeline', 'models', 'model.pkl')
+NLP_MODEL_CACHE_DIR = config('MODEL_CACHE_DIR', default='/tmp/onnx_model_cache')
 ML_PIPELINE_DIR = os.path.join(PROJECT_ROOT, 'pipeline')
 ML_DATASET_PATH = os.path.join(PROJECT_ROOT, 'data', 'synthetic_dataset.json')
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
