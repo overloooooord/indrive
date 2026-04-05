@@ -541,6 +541,7 @@ def _serialize_bot_app(app):
             'ИИ' in str((app.score_flags or {}).get('ai_detection', {}).get('detail', '')) or
             'AI' in str((app.score_flags or {}).get('ai_detection', {}).get('detail', ''))
         ) if app.score_flags else False,
+        'uploaded_files': app.uploaded_files or [],
         'scored_at': str(app.scored_at) if app.scored_at else None,
         'updated_at': str(app.updated_at) if app.updated_at else None,
     }
