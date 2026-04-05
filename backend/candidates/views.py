@@ -56,7 +56,7 @@ def _web_choices_to_path(choices: dict) -> list[str]:
 
 
 def _compute_and_save_fingerprint(application):
-    """Compute fingerprint from web scenario_choices and save to Application."""
+    """Compute fingerprint from web scenario_choices and save to BotApplication."""
     try:
         from scenario_engine import compute_fingerprint
         choices = application.scenario_choices or {}
@@ -64,9 +64,10 @@ def _compute_and_save_fingerprint(application):
             return
         choice_path = _web_choices_to_path(choices)
         fp_result = compute_fingerprint(choice_path)
-        application.fingerprint_display = fp_result.get("fingerprint_display")
-        application.fingerprint_reliable = fp_result.get("fingerprint_reliable", False)
-        application.save(update_fields=['fingerprint_display', 'fingerprint_reliable'])
+        BotApplication.objects.filter(pk=application.pk).update(
+            fingerprint_display=fp_result.get("fingerprint_display"),
+            fingerprint_reliable=fp_result.get("fingerprint_reliable", False),
+        )
     except Exception as e:
         logger.error(f"Fingerprint computation failed for app #{application.pk}: {e}")
 
@@ -76,12 +77,13 @@ def _compute_and_save_essay_nlp(application):
     def _run():
         try:
             from nlp.nlp_model import analyze_essay
-            essay = application.essay or ''
+            essay = application.essay_text or ''
             if len(essay.split()) < 50:
                 return
             result = analyze_essay(essay)
-            application.essay_nlp = result.get("scores")
-            application.save(update_fields=['essay_nlp'])
+            BotApplication.objects.filter(pk=application.pk).update(
+                essay_nlp=result.get("scores"),
+            )
         except Exception as e:
             logger.error(f"Essay NLP failed for app #{application.pk}: {e}")
     threading.Thread(target=_run, daemon=True).start()
@@ -107,12 +109,35 @@ def application_list_create(request):
       ?search=Иванов — поиск по имени
     """
     if request.method == 'POST':
-        serializer = ApplicationSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        application = serializer.save()
+        data = request.data
+        application = BotApplication(
+            telegram_id=data.get('telegram_id') or None,
+            telegram_username=data.get('telegram_username', '') or None,
+            source='web',
+            funnel_stage='completed',
+            consent_given=True,
+            name=data.get('name', ''),
+            age=data.get('age'),
+            city=data.get('city', ''),
+            region=data.get('region', ''),
+            school_type=data.get('school_type', ''),
+            gpa=data.get('gpa'),
+            gpa_raw=data.get('gpa_raw', ''),
+            languages=data.get('languages') or [],
+            ielts_score=data.get('ielts_score'),
+            ent_score=data.get('ent_score'),
+            olympiads=data.get('olympiads') or [],
+            courses=data.get('courses') or [],
+            projects=data.get('projects') or [],
+            essay_text=data.get('essay', ''),
+            essay_word_count=len((data.get('essay') or '').split()),
+            scenario_choices=data.get('scenario_choices') or {},
+            timer_violations=data.get('timer_violations') or 0,
+        )
+        application.save()
 
         app_logger.info(
-            f"Новая заявка #{application.pk}: {application.name} "
+            f"Новая веб-заявка #{application.pk}: {application.name} "
             f"из {application.city}, GPA: {application.gpa}, "
             f"олимпиад: {len(application.olympiads or [])}, "
             f"проектов: {len(application.projects or [])}"
@@ -133,7 +158,7 @@ def application_list_create(request):
         threading.Thread(target=_notify, daemon=True).start()
 
         return Response(
-            ApplicationSerializer(application).data,
+            _serialize_bot_app(application),
             status=status.HTTP_201_CREATED,
         )
 
@@ -318,19 +343,23 @@ def admin_applications(request):
     funnel = request.query_params.get('funnel_stage', '')
     scored = request.query_params.get('scored', '')
 
+    results = []
     try:
-        results = _load_from_bot_db(search, funnel, scored)
-        return Response({'count': len(results), 'results': results, 'source': 'bot_db'})
+        results.extend(_load_from_bot_db(search, funnel, scored))
     except Exception as e:
         logger.error(f"Ошибка bot_db: {e}")
 
-    # Fallback if bot_db fails or not configured
+    # Always also load web submissions from candidates_application (migration period)
     try:
-        results = _load_from_local_db(search)
-        return Response({'count': len(results), 'results': results, 'source': 'local'})
+        results.extend(_load_from_local_db(search))
     except Exception as e:
-        logger.error(f"Ошибка БД: {e}")
-        return Response({'error': str(e)}, status=500)
+        logger.error(f"Ошибка local DB: {e}")
+
+    if not results:
+        return Response({'error': 'Нет данных'}, status=500)
+
+    results.sort(key=lambda x: x.get('updated_at') or '', reverse=True)
+    return Response({'count': len(results), 'results': results, 'source': 'merged'})
 
 
 def _load_from_bot_db(search, funnel, scored):

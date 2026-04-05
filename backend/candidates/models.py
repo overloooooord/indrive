@@ -201,8 +201,9 @@ class BotApplication(models.Model):
     Django does NOT create/migrate this table — it already exists.
     """
     # identity
-    telegram_id = models.BigIntegerField(unique=True)
+    telegram_id = models.BigIntegerField(null=True, blank=True, db_index=True)
     telegram_username = models.CharField(max_length=100, null=True, blank=True)
+    source = models.CharField(max_length=10, null=True, blank=True, default='bot')
 
     # bot_metadata
     funnel_stage = models.CharField(max_length=50, default='started')
