@@ -826,7 +826,7 @@ async def olympiad_done(callback: CallbackQuery, state: FSMContext):
 
 async def ask_courses(message: Message, state: FSMContext):
     await message.answer(
-        "Проходил(а) ли ты онлайн-курсы или дополнительное обучение вне школы?\n"
+            "Проходил(а) ли ты онлайн-курсы или дополнительное обучение вне школы?\n"
         "Coursera, Stepik, YouTube-курсы, очные тренинги — всё считается.",
         reply_markup=kb_yes_skip()
     )
