@@ -638,7 +638,6 @@
                     <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.color}44;white-space:nowrap;">${st.label}</span>
                     <button onclick="this.closest('.card').style.display='none'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:0 4px;" title="Скрыть из списка">✕</button>
                 </div>
-            </div>
             <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:4px;">📞 ${esc(n.student_contacts)}</div>
             <div style="font-size:0.82rem;color:var(--text-primary);margin:6px 0;line-height:1.5;">${esc(n.reason)}</div>
             ${n.achievements ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;">🏆 ${esc(n.achievements)}</div>` : ''}
@@ -686,28 +685,44 @@
 
     // CSV Export
     function exportCSV() {
-        if (!_allData || !_allData.length) return showToast('Нет данных для выгрузки', 'error');
+        if (!allApps || !allApps.length) return showToast('Нет данных для выгрузки', 'error');
+        const q = (s) => '"' + String(s || '').replace(/"/g, '""') + '"';
         let csv = '\uFEFF';
-        csv += 'ID,Имя,Город,GPA,ЕНТ,IELTS,Олимпиады,Проекты,Предсказание,Уверенность\n';
-        _allData.forEach(c => {
-            let name = (c.personal?.name || '').replace(/,/g, '');
-            let city = (c.personal?.city || '').replace(/,/g, '');
-            let gpa = c.education?.gpa || '';
-            let ent = c.education?.ent_score || '';
-            let ielts = c.education?.ielts_score || '';
-            let olymps = (c.education?.olympiads || []).length;
-            let projs = (c.experience?.projects || []).length;
-            let pred = c.scoring?.prediction || 'unscored';
-            let conf = c.scoring?.confidence ? (c.scoring.confidence * 100).toFixed(1) + '%' : '';
-            csv += `${c.id},${name},${city},${gpa},${ent},${ielts},${olymps},${projs},${pred},${conf}\n`;
+        csv += 'ID,Имя,Возраст,Город,Регион,Школа,Языки,GPA,ЕНТ,IELTS,Олимпиады,Курсы,Проекты,Эссе (слов),Файлы,Этап воронки,AI Предсказание,Уверенность AI,Telegram,Обновлено\n';
+        allApps.forEach(c => {
+            csv += [
+                c.id,
+                q(c.name),
+                c.age || '',
+                q(c.city),
+                q(c.region),
+                q(c.school_type),
+                q((c.languages || []).join('; ')),
+                c.gpa != null ? c.gpa : '',
+                c.ent_score || '',
+                c.ielts_score || '',
+                (c.olympiads || []).length,
+                (c.courses || []).length,
+                (c.projects || []).length,
+                c.essay_word_count || 0,
+                (c.uploaded_files || []).length,
+                q(c.funnel_stage),
+                q(c.score_prediction || 'unscored'),
+                c.score_confidence ? (c.score_confidence * 100).toFixed(1) + '%' : '',
+                q(c.telegram_username),
+                q(c.updated_at),
+            ].join(',') + '\n';
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'invision_candidates.csv';
+        a.download = `invision_candidates_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        showToast(`✅ Выгружено ${allApps.length} заявок`, 'success');
     }
 
     // Initial load
