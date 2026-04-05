@@ -13,6 +13,8 @@ engine = create_async_engine(
     echo=False,
     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False),
     connect_args={"ssl": "require"},
+    pool_pre_ping=True,
+    pool_recycle=300,
 )
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 

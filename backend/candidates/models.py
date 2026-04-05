@@ -13,7 +13,19 @@ models.py — Модели базы данных.
 """
 
 from django.db import models
+from django.db.models import JSONField as _JSONField
+import json as _json
 import uuid
+
+
+class SafeJSONField(_JSONField):
+    """JSONField that handles psycopg2 returning already-parsed Python objects for JSONB columns."""
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value
+        if isinstance(value, (dict, list, int, float, bool)):
+            return value
+        return _json.loads(value, cls=self.decoder)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -221,43 +233,43 @@ class BotApplication(models.Model):
     school_type = models.CharField(max_length=50, null=True, blank=True)
     gpa_raw = models.CharField(max_length=50, null=True, blank=True)
     gpa = models.FloatField(null=True)
-    languages = models.JSONField(null=True, default=list)
+    languages = SafeJSONField(null=True, default=list)
 
     # IELTS / ENT
     ielts_score = models.FloatField(null=True, blank=True)
     ent_score = models.IntegerField(null=True, blank=True)
 
     # education arrays (JSON)
-    olympiads = models.JSONField(null=True, default=list)
-    courses = models.JSONField(null=True, default=list)
+    olympiads = SafeJSONField(null=True, default=list)
+    courses = SafeJSONField(null=True, default=list)
 
     # experience
-    projects = models.JSONField(null=True, default=list)
+    projects = SafeJSONField(null=True, default=list)
 
     # essay
     essay_text = models.TextField(null=True, blank=True)
     essay_word_count = models.IntegerField(null=True)
-    essay_nlp = models.JSONField(null=True, blank=True)
+    essay_nlp = SafeJSONField(null=True, blank=True)
 
     # scenarios / fingerprint
-    scenario_choices = models.JSONField(null=True, default=dict)
-    fingerprint_display = models.JSONField(null=True)
+    scenario_choices = SafeJSONField(null=True, default=dict)
+    fingerprint_display = SafeJSONField(null=True)
     fingerprint_reliable = models.BooleanField(null=True, blank=True)
     timer_violations = models.IntegerField(default=0)
 
     # files
-    uploaded_files = models.JSONField(null=True, default=list)
+    uploaded_files = SafeJSONField(null=True, default=list)
 
     # full candidate JSON snapshot for ML pipeline
-    candidate_json = models.JSONField(null=True, blank=True)
+    candidate_json = SafeJSONField(null=True, blank=True)
 
     # pipeline scoring results
     score_prediction = models.CharField(max_length=20, null=True, blank=True)
     score_confidence = models.FloatField(null=True)
-    score_probabilities = models.JSONField(null=True)
-    score_explanation = models.JSONField(null=True)
-    score_radar = models.JSONField(null=True)
-    score_flags = models.JSONField(null=True)
+    score_probabilities = SafeJSONField(null=True)
+    score_explanation = SafeJSONField(null=True)
+    score_radar = SafeJSONField(null=True)
+    score_flags = SafeJSONField(null=True)
     scored_at = models.DateTimeField(null=True)
 
     updated_at = models.DateTimeField(null=True)
