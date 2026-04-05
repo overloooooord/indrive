@@ -8,11 +8,12 @@ import bcrypt
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pipeline'))
 
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
     Candidate, ScoringResult,
@@ -90,7 +91,10 @@ def _compute_and_save_essay_nlp(application):
 # ЗАЯВКИ — CRUD
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+@csrf_exempt
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def application_list_create(request):
     """
     GET  /api/applications/ — список всех заявок (с фильтрами и пагинацией)
@@ -485,6 +489,8 @@ def admin_score_application(request, pk):
                              'languages': app.languages or [],
                              'school_type': app.school_type or '', 'has_mentor': False},
                 'education': {'gpa': app.gpa or 3.5,
+                              'ielts_score': app.ielts_score,
+                              'ent_score': app.ent_score,
                               'olympiads': app.olympiads or [],
                               'courses': app.courses or []},
                 'experience': {'projects': app.projects or []},
@@ -496,7 +502,7 @@ def admin_score_application(request, pk):
                     'fingerprint_reliable': bool(app.fingerprint_reliable),
                     'scenario_choices': app.scenario_choices or {},
                     'timer_violations': app.timer_violations or 0,
-                    'essay_nlp': app.essay_nlp or {},
+                    'essay_nlp': app.essay_nlp if app.essay_nlp else None,
                 },
             }
 
@@ -577,13 +583,21 @@ def admin_score_all_applications(request):
                                  'languages': app.languages or [],
                                  'school_type': app.school_type or '', 'has_mentor': False},
                     'education': {'gpa': app.gpa or 3.5,
+                                  'ielts_score': app.ielts_score,
+                                  'ent_score': app.ent_score,
                                   'olympiads': app.olympiads or [],
                                   'courses': app.courses or []},
                     'experience': {'projects': app.projects or []},
                     'essay': {'text': app.essay or '', 'word_count': len((app.essay or '').split())},
                     'motivation': {'text': ''},
                     'self_assessment': {},
-                    'bot_metadata': {},
+                    'bot_metadata': {
+                        'fingerprint_display': app.fingerprint_display or {},
+                        'fingerprint_reliable': bool(app.fingerprint_reliable),
+                        'scenario_choices': app.scenario_choices or {},
+                        'timer_violations': app.timer_violations or 0,
+                        'essay_nlp': app.essay_nlp if app.essay_nlp else None,
+                    },
                 }
 
             result = score_candidate(candidate_dict)
