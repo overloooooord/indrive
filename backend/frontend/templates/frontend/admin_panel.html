@@ -626,29 +626,57 @@
             grid.innerHTML = '<div style="color:var(--text-muted);padding:1.5rem;font-size:0.88rem;">Рекомендаций пока нет</div>';
             return;
         }
+        const STATUS = {
+            pending:  { label: '⏳ На рассмотрении', color: '#9ca3af', bg: 'rgba(55,65,81,0.5)', border: '#9ca3af' },
+            accepted: { label: '✅ Принято',          color: '#22c55e', bg: 'rgba(22,163,74,0.1)', border: '#22c55e' },
+            rejected: { label: '❌ Отклонено',        color: '#ef4444', bg: 'rgba(220,38,38,0.1)', border: '#ef4444' },
+        };
         grid.innerHTML = noms.map(n => {
-            const st = NOM_STATUS[n.status] || NOM_STATUS.pending;
+            const st = STATUS[n.status] || STATUS.pending;
             return `
-        <div class="card" style="padding:1.25rem;border-left:3px solid ${st.color};">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div>
-                    <div style="font-weight:700;font-size:1rem;">${esc(n.student_name)}</div>
-                    <div style="color:var(--text-secondary);font-size:0.8rem;margin-top:2px;">👩‍🏫 ${esc(n.teacher_name || n.teacher_login)} · ${esc(n.created_at)}</div>
+        <div style="
+            background:var(--bg-card,#1e293b);
+            border:1px solid var(--border,#334155);
+            border-left:3px solid ${st.border};
+            border-radius:12px;
+            padding:1.25rem;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        ">
+            <!-- Header row -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:1rem;color:var(--text-primary,#f1f5f9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(n.student_name)}</div>
+                    <div style="color:var(--text-secondary,#94a3b8);font-size:0.8rem;margin-top:3px;">🏫 ${esc(n.teacher_name || n.teacher_login)} · ${esc(n.created_at)}</div>
                 </div>
-                <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.color}44;white-space:nowrap;">${st.label}</span>
-                    <button onclick="this.closest('.card').style.display='none'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:0 4px;" title="Скрыть из списка">✕</button>
+                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                    <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.border}44;white-space:nowrap;">${st.label}</span>
+                    <button onclick="this.closest('[data-nom]').style.display='none'" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;line-height:1;" title="Скрыть">✕</button>
                 </div>
             </div>
-            <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:4px;">📞 ${esc(n.student_contacts)}</div>
-            <div style="font-size:0.82rem;color:var(--text-primary);margin:6px 0;line-height:1.5;">${esc(n.reason)}</div>
-            ${n.achievements ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;">🏆 ${esc(n.achievements)}</div>` : ''}
-            ${n.admin_note ? `<div style="font-size:0.8rem;color:var(--accent-dark);background:var(--accent-bg);padding:6px 10px;border-radius:6px;margin-bottom:6px;">💬 ${esc(n.admin_note)}</div>` : ''}
-            ${n.status !== 'accepted' ? `<button onclick="openReview(${n.id},'accepted','${esc(n.student_name)}')" style="background:#16a34a;color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;margin-right:6px;font-family:inherit;">✅ Принять</button>` : ''}
-            ${n.status !== 'rejected' ? `<button onclick="openReview(${n.id},'rejected','${esc(n.student_name)}')" style="background:#dc2626;color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;">❌ Отклонить</button>` : ''}
+            <!-- Contacts -->
+            <div style="font-size:0.82rem;color:var(--text-secondary,#94a3b8);">📞 ${esc(n.student_contacts)}</div>
+            <!-- Reason -->
+            <div style="font-size:0.84rem;color:var(--text-primary,#f1f5f9);line-height:1.6;background:var(--bg-hover,rgba(255,255,255,0.04));padding:8px 10px;border-radius:8px;">${esc(n.reason)}</div>
+            <!-- Achievements -->
+            ${n.achievements ? `<div style="font-size:0.8rem;color:#a78bfa;">🏆 ${esc(n.achievements)}</div>` : ''}
+            <!-- Admin note -->
+            ${n.admin_note ? `<div style="font-size:0.8rem;color:#38bdf8;background:rgba(56,189,248,0.08);padding:6px 10px;border-radius:6px;">💬 ${esc(n.admin_note)}</div>` : ''}
+            <!-- Action buttons -->
+            <div style="display:flex;gap:8px;margin-top:4px;">
+                ${n.status !== 'accepted' ? `<button onclick="openReview(${n.id},'accepted','${esc(n.student_name)}')" style="background:#16a34a;color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;">✅ Принять</button>` : ''}
+                ${n.status !== 'rejected' ? `<button onclick="openReview(${n.id},'rejected','${esc(n.student_name)}')" style="background:#dc2626;color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;">❌ Отклонить</button>` : ''}
+            </div>
         </div>`;
         }).join('');
+        // Fix hide button — use data attr on parent
+        grid.querySelectorAll('[data-nom]').forEach(el => {
+            const btn = el.querySelector('button[onclick*="closest"]');
+            if (btn) btn.onclick = () => el.style.display = 'none';
+        });
     }
+
 
     function openReview(id, status, name) {
         _reviewId = id; _reviewStatus = status;
