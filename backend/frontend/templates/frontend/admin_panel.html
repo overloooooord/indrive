@@ -272,6 +272,39 @@ function renderCards(apps) {
     }).join('');
 }
 
+
+function buildEssayNlp(nlp) {
+    if (!nlp) return '<div style="margin-top:8px;font-size:0.78rem;color:var(--text-muted);">⏳ NLP анализ ещё не выполнен</div>';
+    var NLP_KEYS = [
+        ['model_the_way', '🧭 Ролевая модель'],
+        ['inspire_shared_vision', '✨ Видение'],
+        ['challenge_the_process', '💡 Инновации'],
+        ['enable_others_to_act', '🤝 Командная работа'],
+        ['encourage_the_heart', '❤️ Поддержка'],
+        ['overall', '📊 Общий балл']
+    ];
+    var h = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">';
+    h += '<div style="font-weight:700;margin-bottom:10px;font-size:0.85rem;color:var(--accent-dark);">🧠 NLP Анализ эссе (mDeBERTa)</div>';
+    NLP_KEYS.forEach(function(pair) {
+        var key = pair[0], label = pair[1];
+        var val = nlp[key];
+        if (val == null) return;
+        var pct = (val / 10 * 100).toFixed(0);
+        var color = val >= 6.5 ? '#22c55e' : val >= 4.0 ? '#f59e0b' : '#ef4444';
+        var isOverall = key === 'overall';
+        h += '<div style="margin-bottom:' + (isOverall ? '0' : '6') + 'px;' + (isOverall ? 'margin-top:8px;padding-top:8px;border-top:1px solid var(--border);' : '') + '">';
+        h += '<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:2px;">';
+        h += '<span style="color:var(--text-secondary);' + (isOverall ? 'font-weight:700;' : '') + '">' + label + '</span>';
+        h += '<span style="font-weight:700;color:' + color + ';">' + val.toFixed(1) + '/10</span>';
+        h += '</div>';
+        h += '<div style="height:' + (isOverall ? '8' : '5') + 'px;background:var(--bg-input);border-radius:3px;">';
+        h += '<div style="height:100%;width:' + pct + '%;border-radius:3px;background:' + color + ';transition:width 0.5s;"></div>';
+        h += '</div></div>';
+    });
+    h += '</div>';
+    return h;
+}
+
 async function showDetail(id) {
     const c = allApps.find(a => a.id === id);
     if (!c) return;
@@ -386,11 +419,11 @@ async function showDetail(id) {
         </div>` : ''}
 
         <!-- Essay -->
-        ${c.essay_text ? `
-        <div class="card" style="padding:1rem;margin-bottom:1rem;">
-            <div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">📝 Эссе (${c.essay_word_count||0} слов)</div>
-            <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;max-height:120px;overflow-y:auto;">${esc(c.essay_text)}</div>
-        </div>` : ''}
+        ${c.essay_text ? '<div class="card" style="padding:1rem;margin-bottom:1rem;">'
+            + '<div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">📝 Эссе (' + (c.essay_word_count||0) + ' слов)</div>'
+            + '<div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;max-height:120px;overflow-y:auto;">' + esc(c.essay_text) + '</div>'
+            + buildEssayNlp(c.essay_nlp)
+            + '</div>' : ''}
 
         <!-- AI Scores Grid -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
