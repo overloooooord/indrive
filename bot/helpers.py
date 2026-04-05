@@ -8,7 +8,7 @@ def validate_name(text: str) -> bool:
     """2–60 chars, only letters (cyrillic/latin) and spaces"""
     if not (2 <= len(text.strip()) <= 60):
         return False
-    return bool(re.match(r"^[a-zA-Zа-яА-ЯёЁ\s\-]+$", text.strip()))
+    return bool(re.match(r"^[a-zA-Zа-яА-ЯёЁәӘіІңҢғҒүҮұҰқҚөӨһҺ\s\-]+$", text.strip()))
 
 
 def validate_age(text: str) -> int | None:
