@@ -81,6 +81,14 @@ function renderDetail(c) {
                 </div>
             `).join('')}
         </div>`;
+        // AI summary
+        if (r && r.ai_summary) {
+            html += `
+            <div class="card full-width">
+                <div class="card-header"><span class="card-title">📋 Краткая оценка</span></div>
+                <p style="font-size:0.95rem;line-height:1.7;color:var(--text-secondary)">${esc(r.ai_summary)}</p>
+            </div>`;
+        }
         // Radar chart
         if (r && r.radar) {
             html += `

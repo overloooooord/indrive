@@ -487,6 +487,7 @@ def _serialize_bot_app(app):
         'projects': app.projects or [],
         'essay_text': app.essay_text or '',
         'essay_word_count': app.essay_word_count or 0,
+        'essay_nlp': app.essay_nlp,
         'scenario_choices': app.scenario_choices or {},
         'fingerprint_display': fp,
         'fingerprint_reliable': bool(app.fingerprint_reliable),

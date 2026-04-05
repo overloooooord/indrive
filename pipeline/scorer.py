@@ -3,6 +3,7 @@ import os
 import pickle
 import numpy as np
 from typing import Dict, Any, Optional
+from summarizer import generate_candidate_summary
 from config import (
     LABEL_NAMES, MODEL_PATH, FEATURE_DESCRIPTIONS,
     STAGE_WEIGHTS, THREE_STAGE_MODEL_PATH, XGBOOST_PARAMS,
@@ -47,7 +48,7 @@ class CandidateScorer:
         radar       = self._build_radar(candidate)
         flags       = self._build_flags(feature_dict, essay_nlp)
         trajectory  = self._build_trajectory(candidate)
-        return {
+        result = {
             "candidate_id": candidate.get("id", "unknown"),
             "prediction":   LABEL_NAMES[predicted_cls],
             "confidence":   confidence,
@@ -78,6 +79,8 @@ class CandidateScorer:
                 for k, v in feature_dict.items()
             },
         }
+        result["ai_summary"] = generate_candidate_summary(result)
+        return result
     def score_batch(self, candidates: list) -> list:
         return [self.score(c) for c in candidates]
     def rank(self, candidates: list) -> list:
@@ -296,7 +299,7 @@ class ThreeStageScorer:
         predicted_cls = int(np.argmax(final_proba))
         confidence = float(final_proba[predicted_cls])
         explanation = self.explainer.explain(struct_vec, predicted_cls)
-        return {
+        result = {
             "candidate_id": candidate.get("id", "unknown"),
             "prediction":   LABEL_NAMES[predicted_cls],
             "confidence":   confidence,
@@ -339,6 +342,8 @@ class ThreeStageScorer:
                 for k, v in feature_dict.items()
             },
         }
+        result["ai_summary"] = generate_candidate_summary(result)
+        return result
     def score_batch(self, candidates: list) -> list:
         return [self.score(c) for c in candidates]
     def rank(self, candidates: list) -> list:
