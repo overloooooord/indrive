@@ -488,3 +488,21 @@ django.db.utils.OperationalError: could not translate host name "db.ogbabrukutng
 [2026-04-04 21:56:27,299] ERROR candidates — Ошибка скоринга заявки #5: index 23 is out of bounds for axis 0 with size 23
 [2026-04-04 21:56:27,300] ERROR django.request — Internal Server Error: /api/admin/applications/5/score/
 [2026-04-04 21:56:27,300] ERROR django.server — "POST /api/admin/applications/5/score/ HTTP/1.1" 500 92
+[2026-04-05 03:44:31,853] ERROR candidates — Ошибка скоринга заявки #6: 'candidate ? has no bot_metadata.essay_nlp — NLP must be computed in the bot before scoring'
+[2026-04-05 03:44:31,853] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:44:31,854] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 137
+[2026-04-05 03:45:06,307] ERROR candidates — Ошибка скоринга заявки #6: 'candidate ? has no bot_metadata.essay_nlp — NLP must be computed in the bot before scoring'
+[2026-04-05 03:45:06,307] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:45:06,307] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 137
+[2026-04-05 03:48:26,133] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:48:26,133] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:48:26,134] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 58
+[2026-04-05 03:49:07,130] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:49:07,131] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:49:07,132] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 58
+[2026-04-05 03:49:13,783] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:49:13,784] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:49:13,785] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 58
+[2026-04-05 03:50:58,286] ERROR candidates — Ошибка скоринга заявки #6: Feature shape mismatch, expected: 23, got 31
+[2026-04-05 03:50:58,286] ERROR django.request — Internal Server Error: /api/admin/applications/6/score/
+[2026-04-05 03:50:58,286] ERROR django.server — "POST /api/admin/applications/6/score/ HTTP/1.1" 500 87

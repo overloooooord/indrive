@@ -113,7 +113,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'telegram_id', 'telegram_username',
             'name', 'age', 'city', 'region', 'school_type', 'languages',
-            'gpa', 'gpa_raw', 'olympiads', 'courses',
+            'gpa', 'gpa_raw', 'ielts_score', 'ent_score', 'olympiads', 'courses',
             'projects', 'essay',
             'scenario_choices',
             'scoring_result', 'status',
@@ -121,12 +121,26 @@ class ApplicationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'status', 'scoring_result', 'created_at', 'updated_at']
 
+    def validate_gpa(self, value):
+        if value is not None and (value < 0 or value > 5):
+            raise serializers.ValidationError('GPA должен быть от 0 до 5')
+        return value
+
+    def validate_ielts_score(self, value):
+        if value is not None and (value < 0 or value > 9):
+            raise serializers.ValidationError('IELTS балл от 0 до 9')
+        return value
+
+    def validate_ent_score(self, value):
+        if value is not None and (value < 0 or value > 140):
+            raise serializers.ValidationError('ЕНТ балл от 0 до 140')
+        return value
+
     def validate_city(self, value):
         if not value:
             return value
         value = value.strip()
         if value not in CITY_REGION_MAP:
-            # Allow free-text cities (bot doesn't validate against a list)
             pass
         return value
 

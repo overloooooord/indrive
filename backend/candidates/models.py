@@ -140,6 +140,8 @@ class Application(models.Model):
     # ── Образование ──
     gpa = models.FloatField('GPA', null=True, blank=True)
     gpa_raw = models.CharField('GPA (сырой ввод)', max_length=30, blank=True, default='')
+    ielts_score = models.FloatField('IELTS', null=True, blank=True)
+    ent_score = models.IntegerField('ЕНТ', null=True, blank=True)
     olympiads = models.JSONField('Олимпиады', default=list, blank=True,
         help_text='[{subject, year, level, prize}, ...]')
     courses = models.JSONField('Курсы', default=list, blank=True,
@@ -163,6 +165,17 @@ class Application(models.Model):
     scoring_result = models.JSONField(
         'Результат ML оценки', null=True, blank=True, default=None,
         help_text='prediction, confidence, probabilities, radar, flags',
+    )
+
+    # ── Источник заявки ──
+    SOURCE_CHOICES = [
+        ('bot',    'Telegram Bot'),
+        ('web',    'Веб-форма'),
+        ('manual', 'Вручную'),
+    ]
+    source = models.CharField(
+        'Источник', max_length=10, choices=SOURCE_CHOICES,
+        default='web', db_index=True,
     )
 
     status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='new')

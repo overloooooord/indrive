@@ -264,6 +264,15 @@ function nextStep(from) {
         if (!document.getElementById('region').value) return showToast('Выбери регион', 'error');
         if (!document.getElementById('city').value) return showToast('Выбери город', 'error');
     }
+    if (from === 2) {
+        const gpaVal = parseFloat(document.getElementById('gpa').value);
+        if (isNaN(gpaVal)) return showToast('Укажи GPA', 'error');
+        if (gpaVal < 0 || gpaVal > 5) return showToast('GPA должен быть от 0 до 5', 'error');
+        const ieltsVal = document.getElementById('ielts_score').value;
+        if (ieltsVal && (parseFloat(ieltsVal) < 0 || parseFloat(ieltsVal) > 9)) return showToast('IELTS балл от 0 до 9', 'error');
+        const entVal = document.getElementById('ent_score').value;
+        if (entVal && (parseInt(entVal) < 0 || parseInt(entVal) > 140)) return showToast('ЕНТ балл от 0 до 140', 'error');
+    }
     if (from === 4) {
         const wc = countWords(document.getElementById('essayText').value);
         if (wc < 70) return showToast(`Эссе минимум 70 слов (сейчас ${wc})`, 'error');
@@ -550,18 +559,19 @@ async function submitForm() {
     });
     const langStr = document.getElementById('languages').value;
     const languages = langStr ? langStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const ieltsRaw = document.getElementById('ielts_score').value;
+    const entRaw = document.getElementById('ent_score').value;
     const payload = {
         name: document.getElementById('name').value.trim(),
         age: parseInt(document.getElementById('age').value) || null,
-        telegram_id: parseInt(document.getElementById('telegram_id').value) || null,
         telegram_username: document.getElementById('telegram_username').value || '',
         city: document.getElementById('city').value,
         region: document.getElementById('region').value,
         school_type: document.getElementById('school_type').value,
         languages,
         gpa: parseFloat(document.getElementById('gpa').value) || null,
-        ielts_score: document.getElementById('ielts_score').value || '',
-        ent_score: document.getElementById('ent_score').value || '',
+        ielts_score: ieltsRaw ? parseFloat(ieltsRaw) : null,
+        ent_score: entRaw ? parseInt(entRaw) : null,
         olympiads, courses, projects,
         essay: document.getElementById('essayText').value || '',
         scenario_choices: slpiState.choices,

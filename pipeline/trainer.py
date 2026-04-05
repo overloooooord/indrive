@@ -25,13 +25,26 @@ def load_dataset(path: str) -> Tuple[np.ndarray, np.ndarray, List[dict]]:
     X_list = []
     y_list = []
     valid_candidates = []
+    
+    # Import config to get lengths
+    from config import STRUCTURED_FEATURES, SLPI_FEATURES
+    n_struct = len(STRUCTURED_FEATURES)
+    n_slpi   = len(SLPI_FEATURES)
+    
     for c in candidates:
         label = c.get("label")
         if label not in LABEL_MAP:
-            print(f"  [SKIP] Candidate {c.get('id', '?')}: unknown label '{label}'")
             continue
         try:
             features = extract_features(c)
+            # data augmentation: randomly drop SLPI and Essay to simulate incomplete bot profiles
+            if np.random.rand() < 0.3:
+                # drop SLPI
+                features[n_struct : n_struct + n_slpi] = np.nan
+            if np.random.rand() < 0.3:
+                # drop Essay
+                features[n_struct + n_slpi :] = np.nan
+                
         except KeyError as e:
             print(f"  [SKIP] Candidate {c.get('user_id', '?')}: {e}")
             continue

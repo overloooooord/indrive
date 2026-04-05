@@ -61,6 +61,35 @@
           <div class="hero-stat-label" data-i18n="safe">Безопасно</div>
         </div>
       </div>
+
+      <!-- Scroll Indicator -->
+      <div class="scroll-indicator" onclick="document.getElementById('more-info').scrollIntoView({behavior: 'smooth'})">
+        <div class="scroll-line"></div>
+        <span class="scroll-text" data-i18n="scroll_down">Подробнее об AI платформе</span>
+        <div class="scroll-arrow">↓</div>
+      </div>
+    </div>
+
+    <!-- More Info Section -->
+    <div id="more-info" class="more-info-section">
+      <h2 style="font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 3rem;" data-i18n="more_title">Архитектура отбора inVision U</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">🚀</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;" data-i18n="info_ai_title">Трехэтапный ML-Скор</h3>
+          <p style="color: var(--clr-text-2); font-size: 0.95rem; line-height: 1.6;" data-i18n="info_ai_desc">XGBoost модель оценивает кандидатов на основе GPA, портфолио, NLP-анализа эссе (mDeBERTa) и паттернов поведения.</p>
+        </div>
+        <div class="info-card">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚖️</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;" data-i18n="info_fair_title">Сквозная Объективность</h3>
+          <p style="color: var(--clr-text-2); font-size: 0.95rem; line-height: 1.6;" data-i18n="info_fair_desc">Автоматический Fairness Audit и SHAP Explainer исключают предвзятость при принятии решений ИИ.</p>
+        </div>
+        <div class="info-card">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤝</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;" data-i18n="info_int_title">Подтверждение Учителями</h3>
+          <p style="color: var(--clr-text-2); font-size: 0.95rem; line-height: 1.6;" data-i18n="info_int_desc">Децентрализованная модель проверки: школьные преподаватели могут давать прямые рекомендации.</p>
+        </div>
+      </div>
     </div>
   </section>
   <section id="screen-login" class="screen">

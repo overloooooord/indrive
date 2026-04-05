@@ -2,12 +2,16 @@ import bcrypt
 import logging
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.conf import settings
 import json
 logger = logging.getLogger('candidates')
+
+@ensure_csrf_cookie
 def index(request):
     return render(request, 'frontend/index.html')
+
+@ensure_csrf_cookie
 def register(request):
     return render(request, 'frontend/register.html')
 def candidate_detail(request, pk):

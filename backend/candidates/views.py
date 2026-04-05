@@ -833,6 +833,8 @@ def teacher_nominations(request):
             'student_contacts': n.student_contacts,
             'reason': n.reason,
             'achievements': n.achievements,
+            'status': n.status,
+            'admin_note': n.admin_note,
             'created_at': n.created_at.strftime('%d.%m.%Y %H:%M'),
         } for n in nominations]
         return Response({'count': len(data), 'results': data})

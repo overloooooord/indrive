@@ -21,8 +21,13 @@
             InVision U
         </a>
         <div class="navbar-links">
-            <a href="/" id="nav-candidates">Кандидаты</a>
-            <a href="/panel/" id="nav-panel">Войти</a>
+            <a href="/" id="nav-main">Главная</a>
+            {% if request.session.role %}
+                <span class="nav-username" style="color:var(--text-secondary);font-size:0.88rem;font-weight:600;">{% if request.session.role == 'admin' %}admin{% else %}{{ request.session.role }}{% endif %}</span>
+                <a href="/panel/logout/" id="nav-logout" style="color:#ef4444;margin-right:10px;">Выйти</a>
+            {% else %}
+                <a href="/panel/" id="nav-panel">Войти</a>
+            {% endif %}
             <button id="theme-toggle-btn" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);border-radius:100px;padding:6px 14px;cursor:pointer;font-size:0.82rem;color:var(--text-secondary);font-family:inherit;transition:var(--transition);" title="Переключить тему">🌙 Тема</button>
         </div>
     </nav>
@@ -60,9 +65,17 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
+        function getCsrfToken() {
+            const match = document.cookie.match(/csrftoken=([^;]+)/);
+            return match ? match[1] : '';
+        }
+
         async function api(url, options = {}) {
             const defaults = {
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
             };
             const resp = await fetch(url, { ...defaults, ...options });
             if (!resp.ok) {

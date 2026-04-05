@@ -24,6 +24,7 @@ shap>=0.43.0
 
 # NLP (essay analysis)
 transformers
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
 sentencepiece
 deep-translator

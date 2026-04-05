@@ -238,3 +238,48 @@
 [2026-04-05 00:19:30,560] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
 [2026-04-05 01:18:40,056] WARNING candidates — Telegram не настроен: TELEGRAM_BOT_TOKEN не указан в .env. Уведомление не отправлено.
 [2026-04-05 02:46:18,328] INFO candidates — Вход в админ-панель: admin
+[2026-04-05 03:06:34,655] INFO candidates — Выход из кабинета учителя: teacher1
+[2026-04-05 03:06:41,249] INFO candidates — Вход в админ-панель: admin
+[2026-04-05 03:07:19,027] INFO candidates — Выход из админ-панели
+[2026-04-05 03:07:22,278] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
+[2026-04-05 03:07:48,635] INFO candidates — Учитель teacher1 рекомендовал ученика: Никита Жданов
+[2026-04-05 03:07:52,229] INFO candidates — Выход из кабинета учителя: teacher1
+[2026-04-05 03:07:59,885] INFO candidates — Вход в админ-панель: admin
+[2026-04-05 03:08:10,041] INFO candidates — Выход из админ-панели
+[2026-04-05 03:08:13,113] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
+[2026-04-05 03:44:13,033] INFO candidates — Выход из кабинета учителя: teacher1
+[2026-04-05 03:44:23,071] INFO candidates — Вход в админ-панель: admin
+[2026-04-05 03:44:29,703] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:44:31,853] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:44:31,853] ERROR candidates — Ошибка скоринга заявки #6: 'candidate ? has no bot_metadata.essay_nlp — NLP must be computed in the bot before scoring'
+[2026-04-05 03:45:05,928] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:45:06,306] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:45:06,307] ERROR candidates — Ошибка скоринга заявки #6: 'candidate ? has no bot_metadata.essay_nlp — NLP must be computed in the bot before scoring'
+[2026-04-05 03:45:33,180] INFO candidates — Выход из админ-панели
+[2026-04-05 03:45:36,188] INFO candidates — Вход в кабинет учителя: teacher1 (Елена Николаевна)
+[2026-04-05 03:48:24,019] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:48:26,127] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:48:26,133] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:49:07,130] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:49:13,783] ERROR candidates — Ошибка скоринга заявки #6: 'model_the_way'
+[2026-04-05 03:50:56,173] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:50:58,284] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:50:58,286] ERROR candidates — Ошибка скоринга заявки #6: Feature shape mismatch, expected: 23, got 31
+[2026-04-05 03:54:51,208] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:54:53,259] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 03:58:10,124] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 03:58:10,323] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:12:00,708] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:12:02,737] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:12:09,853] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:12:10,110] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:13:00,915] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:13:01,209] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:13:18,923] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:13:20,956] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:20:32,688] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:20:32,961] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:21:01,515] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:21:03,632] INFO candidates.ml_service — ML model loaded successfully
+[2026-04-05 04:39:30,967] INFO candidates.ml_service — Loading ML model from /home/caterinw/Indrive-AI/pipeline/models/model.pkl
+[2026-04-05 04:39:31,264] INFO candidates.ml_service — ML model loaded successfully

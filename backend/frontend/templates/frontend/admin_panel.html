@@ -8,8 +8,8 @@
         <p style="color:var(--text-secondary);font-size:0.9rem;">Supabase PostgreSQL · ML 3-stage pipeline · SHAP объяснения</p>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-secondary" onclick="exportCSV()">📥 Экспорт CSV</button>
         <button class="btn btn-accent" id="btnScoreAll" onclick="scoreAll()">🤖 Оценить всех</button>
-        <a href="/panel/logout/" class="btn btn-secondary">← Выйти</a>
     </div>
 </div>
 
@@ -90,7 +90,7 @@
 </div>
 
 <!-- Nomination review modal -->
-<div id="reviewModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:2rem;">
+<div id="reviewModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;padding:2rem;">
     <div style="background:var(--bg-card);border-radius:14px;padding:2rem;max-width:460px;width:100%;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;" id="reviewTitle">Решение по рекомендации</h3>
         <textarea id="reviewNote" rows="3" placeholder="Комментарий администратора (необязательно)..."
@@ -230,15 +230,17 @@ function renderCards(apps) {
 
         return `
         <div class="card" style="cursor:pointer;position:relative;${isCheat?'border-color:#f97316;box-shadow:0 0 0 1px rgba(249,115,22,0.25);':hasFlags?'border-color:#f59e0b;':''}" onclick="showDetail(${c.id})">
-            ${isCheat ? '<div style="position:absolute;top:8px;right:8px;font-size:0.7rem;background:#f9731622;color:#f97316;border:1px solid rgba(249,115,22,0.3);padding:2px 8px;border-radius:4px;font-weight:700;">🤖 AI Чит</div>' : hasFlags ? '<div style="position:absolute;top:8px;right:8px;font-size:0.7rem;background:#f59e0b22;color:#f59e0b;padding:2px 6px;border-radius:4px;">⚠️ Флаги</div>' : ''}
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
                 <div>
                     <div style="font-weight:700;font-size:1.05rem;">${esc(c.name || 'Без имени')}</div>
                     <div style="color:var(--text-secondary);font-size:0.83rem;">${esc(c.city||'—')} · @${esc(c.telegram_username||'—')} · ${c.age||'—'} лет</div>
                 </div>
-                <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
-                    ${funnelBadge(c.funnel_stage)}
-                    ${predBadge(c)}
+                <div style="display:flex;gap:4px;flex-direction:column;align-items:flex-end;">
+                    ${isCheat ? '<div style="font-size:0.7rem;background:#f9731622;color:#f97316;border:1px solid rgba(249,115,22,0.3);padding:2px 8px;border-radius:4px;font-weight:700;">🤖 AI Чит</div>' : hasFlags ? '<div style="font-size:0.7rem;background:#f59e0b22;color:#f59e0b;padding:2px 6px;border-radius:4px;">⚠️ Флаги</div>' : ''}
+                    <div style="display:flex;gap:4px;">
+                        ${funnelBadge(c.funnel_stage)}
+                        ${predBadge(c)}
+                    </div>
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:0.82rem;margin-bottom:8px;">
@@ -340,7 +342,7 @@ async function showDetail(id) {
                 <div style="margin-top:6px;display:flex;gap:6px;">${funnelBadge(c.funnel_stage)} ${predBadge(c)}</div>
             </div>
             <div style="display:flex;gap:8px;">
-                <button class="btn btn-sm btn-accent" onclick="scoreOne(${c.id})">🔄 Переоценить</button>
+                <button class="btn btn-sm btn-accent" onclick="scoreOne(${c.id}, this)">🔄 Переоценить</button>
                 <button class="btn btn-secondary btn-sm" onclick="closeModal()">✕</button>
             </div>
         </div>
@@ -412,7 +414,7 @@ async function showDetail(id) {
                             <div style="height:100%;width:${(v*100).toFixed(0)}%;border-radius:4px;background:${k==='shortlist'?'#22c55e':k==='reject'?'#ef4444':'#f59e0b'};"></div>
                         </div>
                     </div>`).join('') :
-                    `<div style="text-align:center;padding:1rem;"><button class="btn btn-accent" onclick="scoreOne(${c.id})">🤖 Запустить AI оценку</button></div>`}
+                    `<div style="text-align:center;padding:1rem;"><button class="btn btn-accent" onclick="scoreOne(${c.id}, this)">🤖 Запустить AI оценку</button></div>`}
             </div>
         </div>
 
@@ -443,13 +445,24 @@ document.getElementById('detailModal').addEventListener('click', e => {
     if (e.target === document.getElementById('detailModal')) closeModal();
 });
 
-async function scoreOne(id) {
+async function scoreOne(id, btn) {
+    if (btn) {
+        btn.disabled = true;
+        const oldText = btn.textContent;
+        btn.textContent = '⏳ Нейросеть думает...';
+    }
     try {
         const result = await api(`/api/admin/applications/${id}/score/`, { method:'POST' });
         showToast('✅ Оценка выполнена!', 'success');
         await loadApplications();
         if (document.getElementById('detailModal').style.display === 'block') showDetail(id);
-    } catch (e) { showToast(`❌ ${e.message}`, 'error'); }
+    } catch (e) {
+        showToast(`❌ ${e.message}`, 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '🤖 Запустить AI оценку';
+        }
+    }
 }
 
 async function scoreAll() {
@@ -520,7 +533,10 @@ function renderNominations(noms) {
                     <div style="font-weight:700;font-size:1rem;">${esc(n.student_name)}</div>
                     <div style="color:var(--text-secondary);font-size:0.8rem;margin-top:2px;">👩‍🏫 ${esc(n.teacher_name||n.teacher_login)} · ${esc(n.created_at)}</div>
                 </div>
-                <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.color}44;white-space:nowrap;">${st.label}</span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:0.72rem;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.color}44;white-space:nowrap;">${st.label}</span>
+                    <button onclick="this.closest('.card').style.display='none'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:0 4px;" title="Скрыть из списка">✕</button>
+                </div>
             </div>
             <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:4px;">📞 ${esc(n.student_contacts)}</div>
             <div style="font-size:0.82rem;color:var(--text-primary);margin:6px 0;line-height:1.5;">${esc(n.reason)}</div>
@@ -566,6 +582,32 @@ async function submitReview() {
 document.getElementById('reviewModal').addEventListener('click', function(e) {
     if (e.target === this) closeReview();
 });
+
+// CSV Export
+function exportCSV() {
+    if (!_allData || !_allData.length) return showToast('Нет данных для выгрузки', 'error');
+    let csv = '\uFEFF'; 
+    csv += 'ID,Имя,Город,GPA,ЕНТ,IELTS,Олимпиады,Проекты,Предсказание,Уверенность\n';
+    _allData.forEach(c => {
+        let name = (c.personal?.name || '').replace(/,/g, '');
+        let city = (c.personal?.city || '').replace(/,/g, '');
+        let gpa = c.education?.gpa || '';
+        let ent = c.education?.ent_score || '';
+        let ielts = c.education?.ielts_score || '';
+        let olymps = (c.education?.olympiads || []).length;
+        let projs = (c.experience?.projects || []).length;
+        let pred = c.scoring?.prediction || 'unscored';
+        let conf = c.scoring?.confidence ? (c.scoring.confidence*100).toFixed(1)+'%' : '';
+        csv += `${c.id},${name},${city},${gpa},${ent},${ielts},${olymps},${projs},${pred},${conf}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'invision_candidates.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
 
 // Initial load
 loadApplications();

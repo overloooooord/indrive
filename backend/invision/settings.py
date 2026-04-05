@@ -5,8 +5,8 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,7 +76,8 @@ _front_dir = PROJECT_ROOT / 'front'
 STATICFILES_DIRS = [_front_dir] if _front_dir.exists() else []
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='', cast=Csv())
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
@@ -88,13 +89,14 @@ ML_DATASET_PATH = os.path.join(PROJECT_ROOT, 'data', 'synthetic_dataset.json')
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 TELEGRAM_CHAT_IDS = config('TELEGRAM_CHAT_IDS', default='', cast=Csv(int))
 PANEL_USERNAME = config('PANEL_USERNAME', default='admin')
-PANEL_PASSWORD_HASH = config('PANEL_PASSWORD_HASH', default='$2b$12$QwR8Xe2QAdGPZH1Ug2VTGuiiW/UgUCXRYePbVsWPEDDdcdGx3i2f6')
-TEACHERS = {
-    'teacher1': {
-        'name': 'Елена Николаевна',
-        'password_hash': '$2b$12$HsFMXLbNtRMUp2Nb80ux3ujTn5spiDW3FSN14OGpk2eDZPbDhO/jq',
-    }
-}
+# ВАЖНО: задайте PANEL_PASSWORD_HASH в .env файле!
+PANEL_PASSWORD_HASH = config('PANEL_PASSWORD_HASH', default='')
+TEACHERS_RAW = config('TEACHERS_JSON', default='{}')  # JSON строка из .env
+try:
+    import json as _json
+    TEACHERS = _json.loads(TEACHERS_RAW)
+except Exception:
+    TEACHERS = {}
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
