@@ -120,3 +120,9 @@ SHAP_PLOTS_DIR = "outputs/shap_plots"
 METRICS_DIR = "outputs/metrics"
 FAIRNESS_DIR = "outputs/fairness"
 CURRENT_YEAR = 2025
+
+# Decision thresholds (lower = less strict, more shortlists/maybes)
+# Default argmax behaviour = effectively 0.34 threshold for 3-class.
+# Raise SHORTLIST_THRESHOLD to be stricter, lower it to be more lenient.
+SHORTLIST_THRESHOLD = 0.20   # if P(shortlist) > this → shortlist
+MAYBE_THRESHOLD     = 0.20   # elif P(maybe) > this → maybe (else reject)

@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional
 from config import (
     LABEL_NAMES, MODEL_PATH, FEATURE_DESCRIPTIONS,
     STAGE_WEIGHTS, THREE_STAGE_MODEL_PATH, XGBOOST_PARAMS,
+    SHORTLIST_THRESHOLD, MAYBE_THRESHOLD,
 )
 from feature_extractor import (
     extract_features, extract_features_dict,
@@ -14,6 +15,18 @@ from feature_extractor import (
 )
 from trainer import load_model
 from explainer import CandidateExplainer
+
+
+def _apply_thresholds(probabilities: np.ndarray) -> int:
+    """
+    Мягкий shortlist: если P(shortlist) >= SHORTLIST_THRESHOLD → shortlist (2).
+    Для разделения maybe/reject используется обычный argmax — не даём мусору проходить.
+    Порядок классов: 0=reject, 1=maybe, 2=shortlist (см. LABEL_NAMES).
+    """
+    if float(probabilities[2]) >= SHORTLIST_THRESHOLD:
+        return 2
+    # для maybe vs reject — честный argmax между ними двумя
+    return int(np.argmax(probabilities[:2]))
 def _generate_candidate_summary(score_result: dict) -> str:
     """Детерминированное текстовое резюме по результату скоринга. Без внешних API."""
     prediction = score_result.get("prediction", "")
@@ -75,9 +88,9 @@ class CandidateScorer:
         feature_dict   = extract_features_dict(candidate)
         X             = feature_vector.reshape(1, -1)
         probabilities = self.model.predict_proba(X)[0]
-        predicted_cls = int(np.argmax(probabilities))
+        predicted_cls = _apply_thresholds(probabilities)
         confidence    = float(probabilities[predicted_cls])
-        
+
         explanation = self.explainer.explain(feature_vector, predicted_cls)
         radar       = self._build_radar(candidate)
         flags       = self._build_flags(feature_dict, essay_nlp)
@@ -330,7 +343,7 @@ class ThreeStageScorer:
             X_essay = extract_essay_features(candidate).reshape(1, -1)
             stage_proba["essay"] = self.model_essay.predict_proba(X_essay)[0]
         final_proba = self._combine_proba(stage_proba)
-        predicted_cls = int(np.argmax(final_proba))
+        predicted_cls = _apply_thresholds(final_proba)
         confidence = float(final_proba[predicted_cls])
         explanation = self.explainer.explain(struct_vec, predicted_cls)
         result = {

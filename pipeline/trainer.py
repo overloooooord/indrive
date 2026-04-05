@@ -61,8 +61,11 @@ def train_xgboost(
     X_train: np.ndarray,
     y_train: np.ndarray,
 ) -> Any:
+    # reject=1x, maybe=1.5x, shortlist=2.5x — штраф за ошибку на сильных кандидатах выше
+    CLASS_WEIGHTS = {0: 1.0, 1: 1.5, 2: 2.5}
+    sample_weight = np.array([CLASS_WEIGHTS[int(y)] for y in y_train], dtype=np.float32)
     model = XGBClassifier(**XGBOOST_PARAMS)
-    model.fit(X_train, y_train, verbose=False)
+    model.fit(X_train, y_train, sample_weight=sample_weight, verbose=False)
     return model
 def train_baseline_gpa(X: np.ndarray, y: np.ndarray) -> np.ndarray:
     gpa_idx = STRUCTURED_FEATURES.index("f_gpa")

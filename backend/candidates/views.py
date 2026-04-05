@@ -464,6 +464,39 @@ def _load_from_local_db(search):
     return results
 
 
+def _build_ai_summary(prediction, confidence, explanation, flags):
+    """Детерминированное текстовое резюме из сохранённых полей скоринга."""
+    if not prediction:
+        return ""
+    verdict_map = {
+        "shortlist": "Профиль соответствует критериям программы",
+        "maybe":     "Профиль требует дополнительного рассмотрения",
+        "reject":    "Профиль не соответствует критериям на данном этапе",
+    }
+    conf = confidence or 0.0
+    base = verdict_map.get(prediction, "Оценка недоступна")
+    conf_phrase = "высокая" if conf > 0.75 else "средняя" if conf > 0.5 else "низкая"
+    parts = [f"{base} (уверенность модели — {conf_phrase}, {conf:.0%})."]
+
+    positives = (explanation or {}).get("top_positive_factors", [])
+    negatives = (explanation or {}).get("top_negative_factors", [])
+    fl = flags or {}
+
+    if positives:
+        strong = positives[0]["description"].lower()
+        if len(positives) > 1:
+            strong += f" и {positives[1]['description'].lower()}"
+        parts.append(f"Сильные стороны: {strong}.")
+    if negatives:
+        parts.append(f"Обратить внимание: {negatives[0]['description'].lower()}.")
+    if fl.get("strong_trajectory"):
+        parts.append("Комиссии рекомендуется обратить внимание на траекторию роста.")
+    elif prediction == "maybe":
+        parts.append("Рекомендуется уточнить детали на интервью.")
+
+    return " ".join(parts)
+
+
 def _serialize_bot_app(app):
     """Serialize BotApplication to JSON dict for the admin panel."""
     fp = app.fingerprint_display or {}
@@ -499,6 +532,10 @@ def _serialize_bot_app(app):
         'score_explanation': app.score_explanation,
         'score_radar': app.score_radar,
         'score_flags': app.score_flags,
+        'ai_summary': _build_ai_summary(
+            app.score_prediction, app.score_confidence,
+            app.score_explanation, app.score_flags,
+        ),
         'ai_detection_flag': (
             (app.score_flags or {}).get('ai_detection', {}).get('status') in ('warning', 'alert', 'critical', 'danger') or
             'ИИ' in str((app.score_flags or {}).get('ai_detection', {}).get('detail', '')) or
@@ -507,6 +544,42 @@ def _serialize_bot_app(app):
         'scored_at': str(app.scored_at) if app.scored_at else None,
         'updated_at': str(app.updated_at) if app.updated_at else None,
     }
+
+
+@api_view(['DELETE'])
+def admin_delete_application(request, pk):
+    """DELETE /api/admin/applications/<id>/delete/ — удалить заявку."""
+    if not request.session.get('panel_auth'):
+        return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
+
+    deleted = False
+    try:
+        BotApplication.objects.filter(pk=pk).delete()
+        deleted = True
+    except Exception:
+        pass
+
+    if not deleted:
+        try:
+            Application.objects.filter(pk=pk).delete()
+            deleted = True
+        except Exception:
+            pass
+
+    if deleted:
+        return Response({'ok': True})
+    return Response({'error': f'Заявка #{pk} не найдена'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def admin_delete_all_applications(request):
+    """DELETE /api/admin/applications/clear/ — удалить все заявки."""
+    if not request.session.get('panel_auth'):
+        return Response({'error': 'Не авторизован'}, status=status.HTTP_403_FORBIDDEN)
+
+    bot_count = BotApplication.objects.all().delete()[0]
+    local_count = Application.objects.all().delete()[0]
+    return Response({'deleted': bot_count + local_count})
 
 
 @api_view(['POST'])
