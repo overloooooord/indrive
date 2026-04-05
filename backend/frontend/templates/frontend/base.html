@@ -65,9 +65,17 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
+        function getCsrfToken() {
+            const match = document.cookie.match(/csrftoken=([^;]+)/);
+            return match ? match[1] : '';
+        }
+
         async function api(url, options = {}) {
             const defaults = {
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
             };
             const resp = await fetch(url, { ...defaults, ...options });
             if (!resp.ok) {
