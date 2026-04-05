@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
 from datetime import datetime
 from keyboards import kb_school
-from helpers import build_candidate_json
+from helpers import save_to_json
 
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart, Command
@@ -30,6 +30,7 @@ from helpers import (
     validate_team_size, validate_essay, extract_gpa, build_summary
 )
 from config import MAX_OLYMPIADS, MAX_COURSES, MAX_PROJECTS, SCENARIO_TIMER_SECONDS
+from storage import upload_bytes_to_s3
 from scenario_engine import compute_fingerprint
 
 router = Router()
@@ -1171,7 +1172,7 @@ async def process_essay(message: Message, state: FSMContext):
     # Result is stored in DB — never recomputed later.
     try:
         import sys, os
-        sys.path.insert(0, os.path.dirname(__file__))
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
         from nlp.nlp_model import analyze_essay
         nlp_result = await asyncio.get_event_loop().run_in_executor(
             None, analyze_essay, essay_text
@@ -1470,36 +1471,66 @@ async def skip_upload(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(FileUploadState.waiting, F.document | F.photo | F.video)
-async def handle_file_upload(message: Message, state: FSMContext):
-    file_info = {}
+async def handle_file_upload(message: Message, state: FSMContext, bot: Bot):
+    user_id = message.from_user.id
+
+    # --- Определяем мета-данные и tg_file_id ---
     if message.document:
-        file_info = {
-            "type": "document",
-            "file_id": message.document.file_id,
-            "file_name": message.document.file_name,
-            "mime_type": message.document.mime_type,
-            "file_size": message.document.file_size,
-        }
+        tg_file_id = message.document.file_id
+        file_name = message.document.file_name or f"document_{tg_file_id}"
+        mime_type = message.document.mime_type or "application/octet-stream"
+        file_size = message.document.file_size
+        file_type = "document"
     elif message.photo:
         photo = message.photo[-1]
-        file_info = {
-            "type": "photo",
-            "file_id": photo.file_id,
-            "file_size": photo.file_size,
-        }
+        tg_file_id = photo.file_id
+        file_name = f"photo_{tg_file_id}.jpg"
+        mime_type = "image/jpeg"
+        file_size = photo.file_size
+        file_type = "photo"
     elif message.video:
-        file_info = {
-            "type": "video",
-            "file_id": message.video.file_id,
-            "file_name": message.video.file_name,
-            "file_size": message.video.file_size,
-        }
+        tg_file_id = message.video.file_id
+        file_name = message.video.file_name or f"video_{tg_file_id}.mp4"
+        mime_type = message.video.mime_type or "video/mp4"
+        file_size = message.video.file_size
+        file_type = "video"
+    else:
+        return
 
-    app = await get_application(message.from_user.id)
+    # --- Скачиваем файл из Telegram ---
+    try:
+        tg_file = await bot.get_file(tg_file_id)
+        file_bytes = await bot.download_file(tg_file.file_path)
+        data = file_bytes.read()
+    except Exception as e:
+        logger.error(f"Ошибка скачивания файла от Telegram: {e}")
+        await message.answer("⚠️ Не удалось получить файл от Telegram. Попробуй ещё раз.")
+        return
+
+    # --- Загружаем в Supabase Storage ---
+    storage_key = f"users/{user_id}/{tg_file_id}_{file_name}"
+    try:
+        public_url = await upload_bytes_to_s3(data, storage_key, content_type=mime_type)
+    except Exception as e:
+        logger.error(f"Ошибка загрузки в Supabase для user {user_id}: {e}")
+        await message.answer("⚠️ Не удалось сохранить файл. Попробуй ещё раз.")
+        return
+
+    # --- Сохраняем в БД (URL вместо file_id) ---
+    file_info = {
+        "type": file_type,
+        "file_name": file_name,
+        "mime_type": mime_type,
+        "file_size": file_size,
+        "url": public_url,
+        "storage_key": storage_key,
+    }
+
+    app = await get_application(user_id)
     files = list(app.uploaded_files or [])
     files.append(file_info)
-    await update_application(message.from_user.id, uploaded_files=files)
-    await message.answer(f"✅ Файл #{len(files)} получен. Отправь ещё или напиши /done")
+    await update_application(user_id, uploaded_files=files)
+    await message.answer(f"✅ Файл #{len(files)} сохранён. Отправь ещё или напиши /done")
 
 
 @router.message(FileUploadState.waiting, F.text.lower().in_(["готово", "done", "/done"]))
@@ -1519,11 +1550,10 @@ async def finalize_application(message: Message, state: FSMContext, user_id: int
     app = await get_application(user_id)
     if app:
         try:
-            candidate_json = build_candidate_json(app)
-            await update_application(user_id, candidate_json=candidate_json)
-            logger.info(f"Candidate JSON saved to DB for user {user_id}")
+            path = save_to_json(app)
+            logger.info(f"JSON saved for user {user_id}: {path}")
         except Exception as e:
-            logger.error(f"Error saving candidate JSON to DB: {e}")
+            logger.error(f"Error saving JSON: {e}")
 
     summary = build_summary(app)
     await message.answer(

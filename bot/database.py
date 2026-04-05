@@ -12,7 +12,7 @@ engine = create_async_engine(
     DATABASE_URL,
     echo=False,
     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False),
-    connect_args={"ssl": "require"},
+    # connect_args={"ssl": "require"},
 )
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -90,10 +90,11 @@ async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
         # Add columns that may not exist in older deployments
-        await conn.execute(text(
-            "ALTER TABLE applications ADD COLUMN IF NOT EXISTS candidate_json JSONB"
-        ))
-
+        for stmt in [
+            "ALTER TABLE applications ADD COLUMN IF NOT EXISTS candidate_json JSONB",
+            "ALTER TABLE applications ADD COLUMN IF NOT EXISTS gpa_raw VARCHAR(50)",
+        ]:
+            await conn.execute(text(stmt))
 
 async def get_or_create_application(telegram_id: int, username: str | None = None) -> Application:
     async with async_session() as session:
