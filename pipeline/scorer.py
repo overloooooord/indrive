@@ -98,7 +98,7 @@ class CandidateScorer:
                 "challenge_process": None,
                 "enable_others":     None,
                 "encourage_heart":   None,
-                "status":            "pending — scenario_engine.py not yet deployed",
+                "status":            "pending — fingerprint data not available",
             }
         return {
             "model_the_way":     display.get("model_the_way"),
