@@ -3,6 +3,8 @@ import os
 import pickle
 import numpy as np
 from typing import Dict, Any, Optional
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from summarizer import generate_candidate_summary
 from config import (
     LABEL_NAMES, MODEL_PATH, FEATURE_DESCRIPTIONS,
