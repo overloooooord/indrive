@@ -1171,7 +1171,7 @@ async def process_essay(message: Message, state: FSMContext):
     # Result is stored in DB — never recomputed later.
     try:
         import sys, os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pipeline"))
+        sys.path.insert(0, os.path.dirname(__file__))
         from nlp.nlp_model import analyze_essay
         nlp_result = await asyncio.get_event_loop().run_in_executor(
             None, analyze_essay, essay_text

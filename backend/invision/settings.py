@@ -54,7 +54,11 @@ DATABASES = {
 }
 _database_url = config('DATABASE_URL', default='')
 if _database_url:
-    DATABASES['default'] = dj_database_url.parse(_database_url)
+    DATABASES['default'] = dj_database_url.parse(
+        _database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 DATABASES['bot_db'] = DATABASES['default'].copy()
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
