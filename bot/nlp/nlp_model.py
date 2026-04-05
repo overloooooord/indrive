@@ -71,15 +71,16 @@ def _load_model() -> tuple:
     """
     Downloads (once) and loads:
       • HuggingFace tokenizer (CPU-only, no torch)
-      • ONNX Runtime InferenceSession with INT8 quantized weights
+      • ONNX Runtime InferenceSession — downloaded directly via huggingface_hub,
+        no PyTorch or optimum required.
 
     Returns (session, tokenizer).
     """
     global _session, _tokenizer
 
-
     import onnxruntime as ort
     from transformers import AutoTokenizer
+    from huggingface_hub import hf_hub_download
 
     with _lock:
         if _session is not None:
@@ -87,46 +88,21 @@ def _load_model() -> tuple:
 
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
+        print(f"[essay_analyzer] Downloading ONNX model: {ONNX_MODEL_ID}")
+        onnx_path = hf_hub_download(
+            repo_id=ONNX_MODEL_ID,
+            filename="model.onnx",
+            cache_dir=str(CACHE_DIR),
+        )
 
+        sess_opts = ort.SessionOptions()
+        sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+        sess_opts.intra_op_num_threads = 2
+        _session = ort.InferenceSession(str(onnx_path), sess_options=sess_opts)
 
-
-        try:
-            from optimum.onnxruntime import ORTModelForSequenceClassification
-
-            print(f"[essay_analyzer] Loading ONNX model: {ONNX_MODEL_ID}")
-            # export=False (default): downloads pre-built ONNX directly from Hub,
-            # no PyTorch required.
-            ort_model = ORTModelForSequenceClassification.from_pretrained(
-                ONNX_MODEL_ID,
-                cache_dir=str(CACHE_DIR),
-            )
-            # ort_model.model is the raw InferenceSession
-            _session = ort_model.model
-            _tokenizer = AutoTokenizer.from_pretrained(
-                ONNX_MODEL_ID, cache_dir=str(CACHE_DIR)
-            )
-        except Exception as exc:
-
-
-            local_onnx = CACHE_DIR / "model_int8.onnx"
-            if local_onnx.exists():
-                print(f"[essay_analyzer] Falling back to local ONNX: {local_onnx}")
-                sess_opts = ort.SessionOptions()
-                sess_opts.graph_optimization_level = (
-                    ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-                )
-                sess_opts.intra_op_num_threads = 2  # cap RAM/CPU on shared hosting
-                _session = ort.InferenceSession(
-                    str(local_onnx), sess_options=sess_opts
-                )
-                _tokenizer = AutoTokenizer.from_pretrained(
-                    ONNX_MODEL_ID, cache_dir=str(CACHE_DIR)
-                )
-            else:
-                raise RuntimeError(
-                    f"Could not load ONNX model ({exc}). "
-                    "Run export_model_to_onnx() once to create a local copy."
-                ) from exc
+        _tokenizer = AutoTokenizer.from_pretrained(
+            ONNX_MODEL_ID, cache_dir=str(CACHE_DIR)
+        )
 
         print("[essay_analyzer] Model ready (ONNX Runtime, no PyTorch).")
         return _session, _tokenizer
@@ -156,8 +132,6 @@ def _nli_score(session, tokenizer, premise: str, hypothesis: str) -> float:
     The hypothesis_template mirrors the original:
         "In this text: {label}"
     """
-    import onnxruntime as ort
-
     full_hypothesis = f"In this text: {hypothesis}"
 
     enc = tokenizer(
@@ -280,47 +254,6 @@ def extract_essay_features(candidate: dict) -> np.ndarray:
 
 
 
-def export_model_to_onnx(
-        model_id: str = ONNX_MODEL_ID,
-        output_dir: Path = CACHE_DIR,
-) -> Path:
-    """
-    Exports a HuggingFace sequence-classification model to ONNX and
-    applies dynamic INT8 quantization.
-
-    Requires: pip install optimum[onnxruntime] onnxruntime-tools
-    Does NOT require GPU.
-
-    Usage:
-        python -c "from essay_analyzer_onnx import export_model_to_onnx; export_model_to_onnx()"
-    """
-    from optimum.onnxruntime import ORTModelForSequenceClassification
-    from optimum.onnxruntime.configuration import AutoQuantizationConfig
-    from optimum.onnxruntime import ORTQuantizer
-
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    fp32_dir = output_dir / "fp32"
-
-    print(f"[export] Exporting {model_id} to ONNX FP32 …")
-    model = ORTModelForSequenceClassification.from_pretrained(
-        model_id, export=True
-    )
-    model.save_pretrained(fp32_dir)
-
-    print("[export] Quantizing to INT8 (dynamic) …")
-    quantizer = ORTQuantizer.from_pretrained(fp32_dir)
-    qconfig = AutoQuantizationConfig.avx512_vnni(
-        is_static=False, per_channel=False
-    )
-    quantizer.quantize(
-        save_dir=output_dir,
-        quantization_config=qconfig,
-    )
-
-    out_file = output_dir / "model_quantized.onnx"
-    print(f"[export] Done → {out_file}  ({out_file.stat().st_size // 1024} KB)")
-    return out_file
 
 
 
