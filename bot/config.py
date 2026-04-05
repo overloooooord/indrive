@@ -7,7 +7,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
+DB_PASS = os.getenv("DB_PASS") or os.getenv("DB_PASSWORD")
 
 raw_port = os.getenv("DB_PORT")
 if not raw_port or raw_port.lower() == "none":
@@ -15,8 +15,10 @@ if not raw_port or raw_port.lower() == "none":
 else:
     DB_PORT = raw_port
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-# DATABASE_URL = f"postgresql+asyncpg://postgres:{DB_PASS}@db.ogbabrukutngsdlbryne.supabase.co:5432/postgres"  для хоста 
+DATABASE_URL = (
+    os.getenv("DATABASE_URL")
+    or f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
 
 MAX_OLYMPIADS = 10
 MAX_COURSES = 10
